@@ -19,6 +19,7 @@
     "svelte": "^3.35.0",
     "svelte-preprocess": "^4.6.9",
     "tailwindcss": "^2.0.3",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "vite": "^2.0.5"
   },
@@ -26,6 +27,7 @@
     "@mizchi/svelte-printer": "^2.1.7",
     "css": "^3.0.0",
     "immer": "^8.0.1",
+    "preact": "^10.5.12",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "rollup": "^2.40.0",

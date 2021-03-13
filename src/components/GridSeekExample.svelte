@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { GridData } from "../lib/gridApi";
   import { renderToStyle } from "../lib/gridApi";
-  import TitleBlock from "../data/sdk/components/block/TitleBlock.svelte";
-  import GridEditorLayer from "./GridEditorLayer.svelte";
+  // import TitleBlock from "../data/sdk/components/block/TitleBlock.svelte";
+  import GridEditorLayer from "./layout/GridEdit.svelte";
   let grid: GridData = {
     rows: ["1fr", "40px", "1fr"],
     columns: ["1fr", "30px", "1fr"],
@@ -23,7 +23,7 @@
 </script>
 
 <h1>Grid</h1>
-<div style="position:relative; width: 600px; height: 500px;">
+<div style="position:relative; width: 600px; height: 250px;">
   <!-- controller -->
   {#if target && showEditor}
     <div style="position:absolute">
@@ -51,7 +51,10 @@
       border: 1px dashed black;
       `}
       >
-        <TitleBlock>{area}</TitleBlock>
+        <!-- <TitleBlock id="xxx">{area}</TitleBlock> -->
+        <div style="width:100%;height:100%;display:grid;place-items: center;">
+          {area}
+        </div>
         <!-- <ImageBlock src="https://i.imgur.com/nAnqC.jpg" /> -->
       </div>
     {/each}

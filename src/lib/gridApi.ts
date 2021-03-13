@@ -1,3 +1,24 @@
+type UnitSuffix = "px" | "em" | "rem" | "%" | "fr" | "";
+type Unit<Suffix extends UnitSuffix> = `${number}${Suffix}`;
+export type FlexGrowValue = Unit<"">;
+export type PixelValue = Unit<"px">;
+export type EmValue = Unit<"em">;
+export type RemValue = Unit<"rem">;
+export type PercentValue = Unit<"%">;
+export type FractionValue = Unit<"fr">;
+
+type ConstantValue = PixelValue | EmValue | RemValue;
+type ProportionConstantValue = ConstantValue | PercentValue;
+type ProportiolValue = FlexGrowValue | FractionValue;
+
+type FlexProportionExpr = Array<FlexGrowValue | ProportionConstantValue>;
+type GridProportionExpr = Array<FractionValue | ProportionConstantValue>;
+
+export type FlexData = {
+  direction: "row" | "column";
+  proportions: Array<FlexGrowValue | PixelValue>;
+};
+
 export type GridData = {
   fixedColumns?: (string | boolean)[];
   fixedRows?: (string | boolean)[];
@@ -63,44 +84,22 @@ function makeAnchors(nums: number[]) {
   return anchors;
 }
 // const sum = (nums: number[]): number => nums.reduce((s, n) => s + n, 0);
-export function getAnchors(grid: GridData, w: number, h: number) {
-  const columnsPixels = exprsToPixels(grid.columns, w);
-  const rowsPixels = exprsToPixels(grid.rows, h);
+export function getGridAnchors(grid: GridData, w: number, h: number) {
+  const columnsPixels = exprsToPixels(grid.columns, w, "grid");
+  const rowsPixels = exprsToPixels(grid.rows, h, "grid");
   return {
     columnAnchors: makeAnchors(columnsPixels),
     rowsAnchors: makeAnchors(rowsPixels),
   };
-
-  // const cAnchors: number[] = makeAnchors(columnsPixels);
-  // let xIndex = cAnchors.find((v) => {
-  //   return v - near / 2 < x && x < v + near / 2;
-  // });
-
-  // const rAnchors: number[] = [];
-  // let rLast = 0;
-  // rowsPixels.forEach((p, idx) => {
-  //   if (rowsPixels.length - 1 === idx) return;
-  //   rAnchors.push(rLast + p);
-  //   rLast += p;
-  // });
-  // let yIndex: number | null = null;
-  // rAnchors.forEach((v, idx) => {
-  //   if (v - near / 2 < y && y < v + near / 2) {
-  //     yIndex = idx;
-  //     return;
-  //   }
-  // });
-
-  // return {
-  //   xIndex,
-  //   yIndex,
-  //   // columnsPixels,
-  //   // rowsPixels,
-  //   // cAnchors,
-  //   // rAnchors,
-  // };
 }
-function pixelToNumber(expr: string | number): number {
+
+export function getFlexAnchors(flex: FlexData, length: number) {
+  const pixels = exprsToPixels(flex.proportions, length, "flex");
+  console.log(pixels);
+  return makeAnchors(pixels);
+}
+
+export function pixelToNumber(expr: string | number): number {
   if (typeof expr === "number") {
     return expr;
   } else {
@@ -108,7 +107,7 @@ function pixelToNumber(expr: string | number): number {
   }
 }
 
-function fractionToNumber(expr: string | number): number {
+export function fractionToNumber(expr: string | number): number {
   if (typeof expr === "number") {
     return expr;
   } else {
@@ -116,21 +115,32 @@ function fractionToNumber(expr: string | number): number {
   }
 }
 
-function numberToPixel(expr: number): string {
+export function numberToPixel(expr: number): string {
   return `${expr}px`;
 }
 
-function numberToFraction(expr: number): string {
+export function numberToFraction(expr: number): string {
   return `${expr}fr`;
 }
 
-function exprsToPixels(exprs: string[], maxSize: number): number[] {
+function exprsToPixels(
+  exprs: string[],
+  maxSize: number,
+  type: "flex" | "grid"
+): number[] {
   const pxSum = exprs
-    .filter((n) => n.includes("px"))
+    .filter((n) => n.endsWith("px"))
     .map(pixelToNumber)
     .reduce((sum, i) => sum + i, 0);
+
   const frSum = exprs
-    .filter((n) => n.includes("fr"))
+    .filter((n) => {
+      if (type === "grid") {
+        return n.endsWith("fr");
+      } else {
+        return !(n.endsWith("fr") || n.endsWith("px"));
+      }
+    })
     .map(fractionToNumber)
     .reduce((sum, i) => sum + i, 0);
 
@@ -249,5 +259,29 @@ export function buildEditableGridData(
     fixedRows: original.fixedRows,
     areas,
     controllers,
+  };
+}
+
+export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
+  const style = getComputedStyle(target);
+  const flexDirection = style.flexDirection;
+  const flexes: Array<PixelValue | FlexGrowValue> = [];
+
+  for (const child of Array.from(target.children)) {
+    const childStyle = getComputedStyle(child);
+    const flexGrow = Number(childStyle.flexGrow);
+    if (flexGrow > 0) {
+      flexes.push(flexGrow.toString() as FlexGrowValue);
+    } else {
+      if (flexDirection === "row") {
+        flexes.push(childStyle.width as PixelValue);
+      } else {
+        flexes.push(childStyle.height as PixelValue);
+      }
+    }
+  }
+  return {
+    direction: flexDirection as "row" | "column",
+    proportions: flexes,
   };
 }

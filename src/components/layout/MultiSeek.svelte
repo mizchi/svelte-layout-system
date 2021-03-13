@@ -28,14 +28,14 @@
         const cx = ev.pageX - rect.left;
         const delta = cx - holdAnchor.sx;
         const newAnchors = produce(anchors, (d) => {
-          d[holdAnchor.index] = holdAnchor.sx + delta;
+          d[holdAnchor!.index] = holdAnchor!.sx + delta;
         });
         anchors = newAnchors;
       } else if (type === "vertical") {
         const cy = ev.pageY - rect.top;
         const delta = cy - holdAnchor.sy;
         const newAnchors = produce(anchors, (d) => {
-          d[holdAnchor.index] = holdAnchor.sy + delta;
+          d[holdAnchor!.index] = holdAnchor!.sy + delta;
         });
         anchors = newAnchors;
       }
@@ -61,6 +61,8 @@
 
   const onMouseDownOnBar = (ev: any) => {
     const { index, target } = ev.target.dataset ?? {};
+
+    console.log("mousedown", ev.target, index, target);
     if (target == internalId && index) {
       const rect = parent.getBoundingClientRect();
       const x = ev.pageX - rect.left;
@@ -86,19 +88,13 @@
   on:mousedown={onMouseDownOnBar}
 />
 
-<g transform="translate({x}, {y})">
+<g transform="translate({x}, {y})" style={holdAnchor ? "" : "cursor: grab"}>
   {#if type == "horizontal"}
-    <line
-      x1={0}
-      y1={barLength / 2}
-      x2={length}
-      y2={barLength / 2}
-      stroke="red"
-    />
+    <line x1={0} y1={0} x2={length} y2={0} stroke="red" />
     {#each anchors as point, idx}
       <rect
         x={point - barWidth / 2}
-        y={0}
+        y={-barLength / 2}
         width={barWidth}
         height={barLength}
         fill="black"
@@ -107,7 +103,7 @@
       />
     {/each}
   {:else if "vertical"}
-    <line x1={barWidth / 2} y1={0} x2={barWidth / 2} y2={length} stroke="red" />
+    <line x1={0} y1={0} x2={0} y2={length} stroke="red" />
     {#each anchors as point, idx}
       <rect
         x={0}

@@ -1,9 +1,9 @@
-import SeekApp from "./components/SeekApp.svelte";
-// import SeekApp from "./components/App.svelte";
+import App from "./components/App2.svelte";
+// import App from "./components/App.svelte";
 
 let app: any;
 async function main() {
-  app = new SeekApp({ target: document.body });
+  app = new App({ target: document.body });
 }
 
 main().catch(console.error);

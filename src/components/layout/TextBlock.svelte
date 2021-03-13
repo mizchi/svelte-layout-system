@@ -1,0 +1,74 @@
+<script lang="ts">
+  export let style: string = "";
+
+  import { getEditContext } from "./EditContext.svelte";
+
+  const { editMode } = getEditContext();
+  const dev = true;
+
+  let editing = false;
+
+  export let text: string;
+
+  let inputElement: null | HTMLInputElement = null;
+  let editingValue = text;
+  let onComposition = false;
+
+  const onCompositionStart = () => (onComposition = true);
+  const onCompositionEnd = () => (onComposition = false);
+
+  $: showEdit = $editMode === "block";
+
+  const onKeydown = (ev: any) => {
+    if (onComposition) return;
+    if (ev.key === "Escape" || ev.key === "Enter") {
+      editing = false;
+    }
+  };
+
+  const onBlur = (ev: any) => (editing = false);
+  $: inputStyle = `width:${editingValue!.length * 0.6}em`;
+  let canvas: null | HTMLCanvasElement = null;
+</script>
+
+<div class="root" {style}>
+  {#if showEdit}
+    <canvas bind:this={canvas} style="display: none;" />
+    <input
+      bind:this={inputElement}
+      bind:value={editingValue}
+      on:keydown={onKeydown}
+      on:blur={onBlur}
+      on:compositionstart={onCompositionStart}
+      on:compositionend={onCompositionEnd}
+      style={inputStyle}
+    />
+  {:else}
+    {editingValue}
+  {/if}
+
+  <!-- <slot /> -->
+</div>
+
+<style>
+  .root {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+  }
+
+  .text {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  input {
+    background: #ded;
+    outline: none;
+    max-width: 100%;
+    min-width: 1em;
+    text-align: center;
+  }
+</style>

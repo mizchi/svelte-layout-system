@@ -1,58 +1,36 @@
 <script lang="ts">
-  import type { GridData } from "../lib/gridApi";
-  import { renderToStyle } from "../lib/gridApi";
-  import TitleBlock from "../data/sdk/components/block/TitleBlock.svelte";
-  import GridEditorLayer from "./GridEditorLayer.svelte";
-  let grid: GridData = {
-    rows: ["1fr", "40px", "1fr"],
-    columns: ["1fr", "30px", "1fr"],
-    areas: [
-      ["a", "b", "c"],
-      ["e", "f", "g"],
-      ["h", "i", "j"],
-    ],
+  import type { FlexData } from "../lib/gridApi";
+  // import FlexEditorLayer from "./FlexEdit.svelte";
+  let flexData: FlexData = {
+    direction: "row",
+    proportions: ["1", "2", "1"],
   };
-  $: containerStyle = renderToStyle(grid);
-
-  let target: null | HTMLElement = null;
-
-  const onChangeGrid = (ev: CustomEvent<GridData>) => {
-    grid = ev.detail;
+  let target: HTMLElement | null = null;
+  const onChangeFlex = (ev: CustomEvent<FlexData>) => {
+    flexData = ev.detail;
   };
-
-  let showEditor = false;
 </script>
 
 <h1>Flex</h1>
-<div style="position:relative; width: 600px; height: 500px;">
-  {#if target && showEditor}
+<div style="position:relative; padding: 10px">
+  {#if target && flexData}
     <div style="position:absolute">
-      <GridEditorLayer
-        {grid}
-        gridRoot={target}
-        on:change-grid={onChangeGrid}
-        on:close={() => (showEditor = false)}
-      />
+      <!-- <FlexEditorLayer
+        {flexData}
+        on:change-flex={onChangeFlex}
+      /> -->
     </div>
   {/if}
-  <div
-    bind:this={target}
-    style={`width: 100%; height: 100%; ${containerStyle}`}
-  >
-    {#each grid.areas.flat() as area}
-      <div
-        id={area}
-        on:click={() => (showEditor = true)}
-        style={`
-      grid-area: ${area};
-      background: wheat;
-      box-sizing-border-bottom;
-      border: 1px dashed black;
-      `}
-      >
-        <TitleBlock>{area}</TitleBlock>
-        <!-- <ImageBlock src="https://i.imgur.com/nAnqC.jpg" /> -->
-      </div>
-    {/each}
+
+  <div bind:this={target} style="width: {500}px;height:{100}px; display: flex">
+    {#if flexData.direction === "row"}
+      {#each flexData.proportions as proportion}
+        <div
+          style="flex: {proportion}; height: 100%; display:grid; place-items:center; outline: 1px dashed black"
+        >
+          {proportion}
+        </div>
+      {/each}
+    {/if}
   </div>
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { GridData } from "../lib/gridApi";
-  import { getAnchors } from "../lib/gridApi";
+  import type { GridData } from "../../lib/gridApi";
+  import { getGridAnchors } from "../../lib/gridApi";
   import MultiSeek from "./MultiSeek.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   export let gridRoot: HTMLElement;
@@ -16,7 +16,7 @@
 
   onMount(() => {
     const rect = gridRoot.getBoundingClientRect();
-    const a = getAnchors(grid, rect.width, rect.height);
+    const a = getGridAnchors(grid, rect.width, rect.height);
     anchors = {
       width: rect.width,
       height: rect.height,

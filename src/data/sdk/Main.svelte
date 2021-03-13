@@ -12,7 +12,7 @@
     initMemoryRouter,
   } from "./components/index";
   const router = initMemoryRouter("/");
-  let opened = true;
+  let opened: boolean = true;
   let close = () => {
     opened = false;
   };
