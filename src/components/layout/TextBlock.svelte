@@ -28,12 +28,12 @@
 
   const onBlur = (ev: any) => (editing = false);
   $: inputStyle = `width:${editingValue!.length * 0.6}em`;
-  let canvas: null | HTMLCanvasElement = null;
+  // let canvas: null | HTMLCanvasElement = null;
 </script>
 
-<div class="root" {style}>
+<div class="text-block" {style}>
   {#if showEdit}
-    <canvas bind:this={canvas} style="display: none;" />
+    <!-- <canvas bind:this={canvas} style="display: none;" /> -->
     <input
       bind:this={inputElement}
       bind:value={editingValue}
@@ -51,19 +51,13 @@
 </div>
 
 <style>
-  .root {
+  .text-block {
     width: 100%;
     max-width: 100%;
     height: 100%;
     display: grid;
     place-items: center;
   }
-
-  .text {
-    max-width: 100%;
-    padding: 15px;
-  }
-
   input {
     background: #ded;
     outline: none;

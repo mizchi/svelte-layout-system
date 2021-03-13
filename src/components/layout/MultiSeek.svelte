@@ -7,11 +7,11 @@
   export let parent: Element;
   export let x: number;
   export let y: number;
+  // import  from "svelte-icons/fa/FaResizeHorizontal.svelte"
 
   const dispatch = createEventDispatcher();
 
-  const barWidth = 12;
-  const barLength = 20;
+  const barLength = 16;
   let holdAnchor: {
     index: number;
     dx: number;
@@ -80,6 +80,9 @@
       dispatch("seekstart", {});
     }
   };
+  const color = `rgb(${~~(Math.random() * 255)}, ${~~(
+    Math.random() * 255
+  )}, ${~~(Math.random() * 255)})`;
 </script>
 
 <svelte:window
@@ -88,32 +91,85 @@
   on:mousedown={onMouseDownOnBar}
 />
 
-<g transform="translate({x}, {y})" style={holdAnchor ? "" : "cursor: grab"}>
+<div
+  style={`
+  position: absolute;
+  left: ${x}px;
+  top: ${y}px;
+`}
+>
   {#if type == "horizontal"}
-    <line x1={0} y1={0} x2={length} y2={0} stroke="red" />
+    <div
+      style={`
+      position: absolute;
+      left: 0px;
+      top: -1px;
+      width: ${length}px;
+      height: 2px;
+      border: 2px solid ${color};
+    `}
+    />
+
     {#each anchors as point, idx}
-      <rect
-        x={point - barWidth / 2}
-        y={-barLength / 2}
-        width={barWidth}
-        height={barLength}
-        fill="black"
+      <div
         data-target={internalId}
         data-index={idx}
-      />
+        style={`
+        position: absolute;
+        left: ${point - barLength / 2}px;
+        top: ${-barLength / 2}px;
+        width: ${barLength}px;
+        height: ${barLength}px;
+        border: ${1}px solid gray;
+        background: ${color};
+        border-radius: ${barLength / 2}px;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        font-size: 4px;
+        color: white;
+        ${holdAnchor ? "" : "cursor: grab;"}
+      `}
+      >
+        ↔
+      </div>
     {/each}
   {:else if "vertical"}
-    <line x1={0} y1={0} x2={0} y2={length} stroke="red" />
+    <div
+      style={`
+      position: absolute;
+      left: -1px;
+      top: 0px;
+      width: 2px;
+      height: ${length}px;
+      border: 1px solid ${color};
+      pointer-events: none;
+      `}
+    />
+
     {#each anchors as point, idx}
-      <rect
-        x={0}
-        y={point - barWidth / 2}
-        width={barLength}
-        height={barWidth}
-        fill="black"
+      <div
+        style={`
+        position: absolute;
+        left: ${-barLength / 2}px;
+        top: ${point - barLength / 2}px;
+        width: ${barLength}px;
+        height: ${barLength}px;
+        border: ${1}px solid gray;
+        background: ${color};
+        border-radius: ${barLength / 2}px;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        font-size: 3px;
+        color: white;
+        ${holdAnchor ? "" : "cursor: grab;"}
+        `}
         data-target={internalId}
         data-index={idx}
-      />
+      >
+        ↕
+      </div>
     {/each}
   {/if}
-</g>
+</div>

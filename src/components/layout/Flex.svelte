@@ -18,6 +18,7 @@
   export let width: `${number}px` | `${number}%` = "100%" as const;
   export let height: `${number}px` | `${number}%` = "100%" as const;
   export let hideForce: boolean = false;
+  export let zIndex: number = 0;
 
   const { editMode } = getEditContext();
 
@@ -67,8 +68,12 @@
 <div
   bind:this={flexRoot}
   class="flex"
-  style="width:{width};height:{height}; flex-direction:{direction}; {dev &&
-    'user-select: none;'} "
+  style={`
+  width: ${width};
+  height: ${height};
+  flex-direction: ${direction};
+  ${dev && "user-select: none;"}
+  `}
 >
   {#if editData && showEdit && !hideForce}
     <div style="position:absolute; z-index: 1;">
@@ -80,8 +85,10 @@
         on:change-flex
       />
     </div>
+    <slot />
+  {:else}
+    <slot />
   {/if}
-  <slot />
 </div>
 
 <style>

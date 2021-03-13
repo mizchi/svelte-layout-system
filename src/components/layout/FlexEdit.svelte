@@ -31,21 +31,11 @@
     dispatch("change-flex", newFlex);
   };
 
-  let element: SVGSVGElement;
-  const onClose = (ev: any) => {
-    ev.preventDefault();
-    dispatch("close");
-  };
+  let element: HTMLElement;
 </script>
 
 <!-- controller -->
-<svg
-  {width}
-  {height}
-  bind:this={element}
-  on:contextmenu={onClose}
-  style="background: rgba(128,128,128,0.5)"
->
+<div style="position:relative" bind:this={element}>
   {#if type === "horizontal"}
     <MultiSeek
       x={0}
@@ -69,4 +59,4 @@
       on:seekend={onSeekEnd}
     />
   {/if}
-</svg>
+</div>

@@ -6,6 +6,7 @@
   const parentDirection = getFlexContext();
   let style: string;
   const dev = true;
+
   $: {
     let newStyle = "";
     if (constant != null) {
@@ -39,6 +40,8 @@
     max-width: 100%;
     max-height: 100%;
     position: relative;
+    isolation: isolate;
+    /* z-index: auto; */
   }
   .flex-item-inner {
     position: absolute;
@@ -48,9 +51,7 @@
     right: 0;
     max-width: 100%;
     max-height: 100%;
+    z-index: auto;
+    isolation: isolate;
   }
-
-  /* .flex-item:hover {
-    background: yellow;
-  } */
 </style>

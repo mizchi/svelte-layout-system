@@ -1,16 +1,18 @@
 <script lang="ts">
   import type { FlexData, FlexGrowValue, PixelValue } from "../lib/gridApi";
-  import GridSeekExample from "./GridSeekExample.svelte";
-  import FlexSeekExample from "./FlexSeekExample.svelte";
+  // import GridSeekExample from "./GridSeekExample.svelte";
+  // import FlexSeekExample from "./FlexSeekExample.svelte";
   import Flex from "./layout/Flex.svelte";
   import FlexItem from "./layout/FlexItem.svelte";
-  import Block from "./layout/Block.svelte";
+  // import Block from "./layout/Block.svelte";
   import TextBlock from "./layout/TextBlock.svelte";
   import { getEditContext } from "./layout/EditContext.svelte";
 
   // const proportions = ["1fr", "100px", "2fr"];
-  let flexProportions: any = [1, 2, 1];
-  let flexProportions2: any = [1, 2];
+  // let flexProportions: any = [1, 2, 1];
+  let flexProportions: any = [1, "100px", 1];
+
+  let flexProportions2: any = [1, "150px", 2];
 
   const onChangeFlex = (ev: CustomEvent<FlexData>) => {
     console.log("top", ev);
@@ -59,17 +61,22 @@
     width="600px"
     height="400px"
     direction="column"
+    zIndex={10}
     on:change-flex={onChangeFlex}
   >
     <FlexItem grow={flexProportions[0]}>
-      <TextBlock text="helll" />
+      <TextBlock text="header" />
     </FlexItem>
-    <FlexItem grow={flexProportions[1]}>
-      <Flex on:change-flex={onChangeFlex2}>
+    <!-- <FlexItem grow={flexProportions[1]}> -->
+    <FlexItem constant={flexProportions[1]}>
+      <Flex on:change-flex={onChangeFlex2} zIndex={3}>
         <FlexItem grow={flexProportions2[0]}>
           <TextBlock text="left" />
         </FlexItem>
-        <FlexItem grow={flexProportions2[1]}>
+        <FlexItem constant={flexProportions2[1]}>
+          <TextBlock text="center" />
+        </FlexItem>
+        <FlexItem grow={flexProportions2[2]}>
           <TextBlock text="right" />
         </FlexItem>
       </Flex>

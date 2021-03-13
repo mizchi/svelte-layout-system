@@ -24,7 +24,7 @@
 </script>
 
 <script lang="ts">
-  const editMode: Writable<"block" | "layout"> = writable("block");
+  const editMode: Writable<EditMode> = writable("layout");
   setContext<EditContext>(token, {
     editMode,
     editLayers: [],
