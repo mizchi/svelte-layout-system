@@ -9,10 +9,12 @@ export type FractionValue = Unit<"fr">;
 
 type ConstantValue = PixelValue | EmValue | RemValue;
 type ProportionConstantValue = ConstantValue | PercentValue;
-type ProportiolValue = FlexGrowValue | FractionValue;
+export type ProportiolValue = FlexGrowValue | FractionValue;
 
-type FlexProportionExpr = Array<FlexGrowValue | ProportionConstantValue>;
-type GridProportionExpr = Array<FractionValue | ProportionConstantValue>;
+export type FlexProportionExpr = Array<FlexGrowValue | ProportionConstantValue>;
+export type GridProportionExpr = Array<FractionValue | ProportionConstantValue>;
+
+export type ProportionExpr = Array<ProportiolValue | ProportionConstantValue>;
 
 export type FlexData = {
   direction: "row" | "column";
@@ -285,3 +287,118 @@ export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
     proportions: flexes,
   };
 }
+
+type PointAnchor = {
+  type: "point";
+  point: number;
+};
+
+type SizedAnchor = {
+  type: "sized";
+  point: number;
+  length: number;
+  fixed: boolean;
+};
+
+function hasSuffix<Suffix extends UnitSuffix>(
+  value: string,
+  suffix: Suffix
+): value is `${number}${Suffix}` {
+  return new RegExp(`[0-9]${suffix}\$`).test(value);
+}
+
+function toNum<T extends UnitSuffix>(expr: Unit<T>, suffix: T): number {
+  const raw = expr.replace(new RegExp(`${suffix}$`, ""), "");
+  return Number(raw);
+}
+
+export function calcAnchors(
+  proportions: Array<FlexGrowValue | PixelValue>,
+  maxSize: number
+): Array<PointAnchor | SizedAnchor> {
+  let proportionSum = 0;
+  let pixelSum = 0;
+  for (const v of proportions) {
+    if (hasSuffix(v, "px")) {
+      const n = toNum(v, "px")!;
+      pixelSum += n;
+    } else {
+      proportionSum += toNum(v, "")!;
+    }
+  }
+
+  let anchors: Array<PointAnchor | SizedAnchor> = [];
+  const restSize = maxSize - pixelSum;
+
+  let progress = 0;
+  for (let i = 0; i < proportions.length; i++) {
+    const isFirst = i === 0;
+    const isLast = i === proportions.length - 1;
+    const isSizedFixed = isFirst || isLast;
+
+    const v = proportions[i];
+    const next = proportions[i + 1];
+    const prev = proportions[i - 1];
+
+    // skip: sized 1 sized
+    if (
+      hasSuffix(v, "") &&
+      prev &&
+      hasSuffix(prev, "px") &&
+      next &&
+      hasSuffix(next, "px")
+    ) {
+      const proportion = toNum(v, "")!;
+      const px = (restSize * proportion) / proportionSum;
+      progress += px;
+      continue;
+    }
+    // const
+    if (hasSuffix(v, "px")) {
+      const px = toNum(v, "px")!;
+      anchors.push({
+        type: "sized",
+        point: progress,
+        length: px,
+        fixed: isSizedFixed,
+      });
+      progress += px;
+    } else {
+      const proportion = toNum(v, "")!;
+      const px = (restSize * proportion) / proportionSum;
+      anchors.push({ type: "point", point: progress });
+      progress += px;
+    }
+  }
+
+  if (anchors[0].type === "point" && anchors[0].point === 0) {
+    anchors = anchors.slice(1);
+  }
+
+  return anchors;
+}
+
+let proportions: Array<FlexGrowValue | PixelValue> = [
+  "5", // 100
+  "2", // 40
+  "200px",
+  "3", // 60
+  "100px",
+];
+
+let expected = [
+  { type: "point", point: 100 },
+  { type: "sized", point: 140, length: 200, fixed: false },
+  { type: "sized", point: 400, length: 100, fixed: true },
+];
+
+// let _proportions: Array<FlexGrowValue | PixelValue> = [
+//   "5",
+//   "2",
+//   "80px",
+//   "3",
+//   "100px",
+// ];
+
+// const xxx = calcAnchors(proportions, 500);
+// console.log(xxx);

@@ -9,6 +9,7 @@
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.2",
     "@tsconfig/svelte": "^1.0.10",
+    "@types/node": "^14.14.34",
     "autoprefixer": "^10.2.5",
     "buffer": "^6.0.3",
     "path-browserify": "^1.0.1",

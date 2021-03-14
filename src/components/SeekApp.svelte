@@ -8,6 +8,8 @@
   import TextBlock from "./layout/TextBlock.svelte";
   import { getEditContext } from "./layout/EditContext.svelte";
 
+  import MultiSeek2 from "./layout/MultiSeek2.svelte";
+
   // const proportions = ["1fr", "100px", "2fr"];
   // let flexProportions: any = [1, 2, 1];
   let flexProportions: any = [1, "100px", 1];
@@ -35,10 +37,24 @@
   const onClickLayout = () => {
     editMode.set("layout");
   };
+
+  let testSeek: HTMLElement;
 </script>
 
 <div class="h-full w-full p-4">
-  <div>
+  <!-- <h1>TestSeek</h1> -->
+  <div style="padding: 10px; position: absolute;" bind:this={testSeek}>
+    <MultiSeek2
+      parent={testSeek}
+      x={0}
+      y={0}
+      length={400}
+      anchors={[100, 200]}
+    />
+  </div>
+
+  <hr />
+  <!-- <div>
     {#if $editMode === "preview"}
       <button>[preview]</button>
     {:else}
@@ -67,7 +83,6 @@
     <FlexItem grow={flexProportions[0]}>
       <TextBlock text="header" />
     </FlexItem>
-    <!-- <FlexItem grow={flexProportions[1]}> -->
     <FlexItem constant={flexProportions[1]}>
       <Flex on:change-flex={onChangeFlex2} zIndex={3}>
         <FlexItem grow={flexProportions2[0]}>
@@ -84,7 +99,7 @@
     <FlexItem grow={flexProportions[2]}>
       <TextBlock text="footer" />
     </FlexItem>
-  </Flex>
+  </Flex> -->
 
   <!-- <GridSeekExample />
   <FlexSeekExample /> -->
