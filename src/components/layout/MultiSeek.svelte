@@ -1,88 +1,82 @@
 <script lang="ts">
-  import produce from "immer";
   import { createEventDispatcher } from "svelte";
-  export let length: number;
-  export let anchors: number[];
+  import produce from "immer";
+  import type { FlexGrowValue, PixelValue } from "../../lib/layout";
+  import { makeControllers, moveController } from "../../lib/layout";
+
   export let type: "horizontal" | "vertical" = "horizontal";
-  export let parent: Element;
-  export let x: number;
-  export let y: number;
-  // import  from "svelte-icons/fa/FaResizeHorizontal.svelte"
 
-  const dispatch = createEventDispatcher();
+  export let length: number;
 
-  const barLength = 16;
-  let holdAnchor: {
+  const dispatch = createEventDispatcher<{
+    seekend: Array<PixelValue | FlexGrowValue>;
+  }>();
+  export let values: Array<FlexGrowValue | PixelValue>;
+
+  let anchors = makeControllers(values, length);
+  let holding: {
     index: number;
-    dx: number;
-    dy: number;
-    sx: number;
-    sy: number;
+    initialPageX: number;
+    initialPageY: number;
+    firstValue: number;
   } | null = null;
 
   const internalId = Math.random().toString(32).substring(2);
-  const onMouseMoveOnBar = (ev: any) => {
-    if (holdAnchor) {
-      const rect = parent.getBoundingClientRect();
-      if (type === "horizontal") {
-        const cx = ev.pageX - rect.left;
-        const delta = cx - holdAnchor.sx;
-        const newAnchors = produce(anchors, (d) => {
-          d[holdAnchor!.index] = holdAnchor!.sx + delta;
-        });
-        anchors = newAnchors;
-      } else if (type === "vertical") {
-        const cy = ev.pageY - rect.top;
-        const delta = cy - holdAnchor.sy;
-        const newAnchors = produce(anchors, (d) => {
-          d[holdAnchor!.index] = holdAnchor!.sy + delta;
-        });
-        anchors = newAnchors;
-      }
-    }
-  };
 
   const onMouseUpOnBar = (ev: any) => {
-    if (holdAnchor == null) return;
-    const rates = [];
-    anchors.forEach((x, i) => {
-      if (i > 0) {
-        rates.push(x - anchors[i - 1]);
-      } else {
-        rates.push(x);
-      }
-    });
-    rates.push(length - anchors[anchors.length - 1]);
-    const newRate = rates.map((x) => x / length);
-    dispatch("seekend", newRate);
-    holdAnchor = null;
+    if (holding == null) return;
+
+    const delta =
+      type === "horizontal"
+        ? ev.pageX - holding.initialPageX
+        : ev.pageY - holding.initialPageY;
+
+    const moved = moveController(values, length, holding.index, delta);
+    values = moved;
+    dispatch("seekend", moved);
+    holding = null;
     window.document.body.style.cursor = "auto";
   };
 
   const onMouseDownOnBar = (ev: any) => {
     const { index, target } = ev.target.dataset ?? {};
-
-    console.log("mousedown", ev.target, index, target);
     if (target == internalId && index) {
-      const rect = parent.getBoundingClientRect();
-      const x = ev.pageX - rect.left;
-      const y = ev.pageY - rect.top;
-      holdAnchor = {
+      const anchor = anchors[index]!;
+      if (anchor.type === "sized" && anchor.fixed) {
+        return;
+      }
+      holding = {
+        initialPageX: ev.pageX as number,
+        initialPageY: ev.pageY as number,
         index: Number(index),
-        sx: x,
-        sy: y,
-        dx: 0,
-        dy: 0,
+        firstValue: anchor.point,
       };
-
       window.document.body.style.cursor = "grabbing";
-
-      dispatch("seekstart", {});
     }
   };
-  const color = `rgb(${~~(Math.random() * 255)}, ${~~(
-    Math.random() * 255
-  )}, ${~~(Math.random() * 255)})`;
+
+  const onMouseMoveOnBar = (ev: any) => {
+    if (holding == null) return;
+    const currentAnchor = anchors[holding.index]!;
+    const delta =
+      type === "horizontal"
+        ? ev.pageX - holding.initialPageX
+        : ev.pageY - holding.initialPageY;
+
+    const nx = holding.firstValue + delta;
+    anchors = produce(anchors, (draftAnchors) => {
+      if (currentAnchor!.type === "point") {
+        draftAnchors[holding!.index]!.point = nx;
+      } else if (currentAnchor.type === "sized") {
+        draftAnchors[holding!.index]!.point = nx;
+      }
+    });
+  };
+  const color = `rgb(${~~(Math.random() * 128)}, ${~~(
+    Math.random() * 128
+  )}, ${~~(Math.random() * 128)})`;
+  // const color = `#333`;
+  const barLength = 18;
 </script>
 
 <svelte:window
@@ -90,15 +84,13 @@
   on:mouseup={onMouseUpOnBar}
   on:mousedown={onMouseDownOnBar}
 />
-
 <div
   style={`
   position: absolute;
-  left: ${x}px;
-  top: ${y}px;
 `}
 >
   {#if type == "horizontal"}
+    <!-- line -->
     <div
       style={`
       position: absolute;
@@ -110,66 +102,120 @@
     `}
     />
 
-    {#each anchors as point, idx}
-      <div
-        data-target={internalId}
-        data-index={idx}
-        style={`
-        position: absolute;
-        left: ${point - barLength / 2}px;
-        top: ${-barLength / 2}px;
-        width: ${barLength}px;
-        height: ${barLength}px;
-        border: ${1}px solid gray;
-        background: ${color};
-        border-radius: ${barLength / 2}px;
-        display: grid;
-        justify-content: center;
-        align-items: center;
-        font-size: 4px;
-        color: white;
-        ${holdAnchor ? "" : "cursor: grab;"}
-      `}
-      >
-        ↔
-      </div>
+    {#each anchors as anchor, idx}
+      {#if anchor.type === "point" && anchor.visible}
+        <div
+          class="point-anchor"
+          data-target={internalId}
+          data-index={idx}
+          data-point={anchor.point}
+          style={`
+            position: absolute;
+            left: ${anchor.point}px;
+            background: ${color};
+            user-select: none;
+            transform: translate(${-barLength / 2}px, ${-barLength / 2}px);
+            ${holding ? "" : "cursor: grab;"}
+          `}
+        />
+      {:else if anchor.type === "sized"}
+        <div
+          data-target={internalId}
+          data-index={idx}
+          style={`
+            position: absolute;
+            left: ${anchor.point}px;
+            top: ${-barLength / 2}px;
+            width: ${anchor.length}px;
+            height: ${barLength}px;
+            box-sizing: border-box;
+            background: ${color};
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            font-size: 4px;
+            user-select: none;
+            color: white;
+            ${holding ? "" : "cursor: grab;"}
+          `}
+        >
+          {anchor.fixed ? "" : "↔"}
+        </div>
+      {/if}
     {/each}
-  {:else if "vertical"}
+  {/if}
+
+  {#if type == "vertical"}
+    <!-- line -->
     <div
       style={`
-      position: absolute;
-      left: -1px;
-      top: 0px;
-      width: 2px;
-      height: ${length}px;
-      border: 1px solid ${color};
-      pointer-events: none;
-      `}
+    position: absolute;
+    left: -1px;
+    top: 0px;
+    width: 2px;
+    height: ${length}px;
+    border: 2px solid ${color};
+  `}
     />
 
-    {#each anchors as point, idx}
-      <div
-        style={`
-        position: absolute;
-        left: ${-barLength / 2}px;
-        top: ${point - barLength / 2}px;
-        width: ${barLength}px;
-        height: ${barLength}px;
-        border: ${1}px solid gray;
-        background: ${color};
-        border-radius: ${barLength / 2}px;
-        display: grid;
-        justify-content: center;
-        align-items: center;
-        font-size: 3px;
-        color: white;
-        ${holdAnchor ? "" : "cursor: grab;"}
+    {#each anchors as anchor, idx}
+      {#if anchor.type === "point" && anchor.visible}
+        <div
+          class="point-anchor"
+          data-target={internalId}
+          data-index={idx}
+          data-point={anchor.point}
+          style={`
+          position: absolute;
+          transform: translate(${-barLength / 2}px, ${-barLength / 2}px);
+          top: ${anchor.point}px;
+          background: ${color};
+          ${holding ? "" : "cursor: grab;"}
         `}
-        data-target={internalId}
-        data-index={idx}
-      >
-        ↕
-      </div>
+        >
+          ↕
+        </div>
+      {:else if anchor.type === "sized"}
+        <div
+          data-target={internalId}
+          data-length="{anchor.length}px"
+          data-index={idx}
+          style={`
+          position: absolute;
+          top: ${anchor.point}px;
+          left: ${-barLength / 2}px;
+          height: ${anchor.length}px;
+          width: ${barLength}px;
+          box-sizing: border-box;
+          background: ${color};
+          display: grid;
+          justify-content: center;
+          align-items: center;
+          font-size: 4px;
+          user-select: none;
+          color: white;
+          ${holding ? "" : "cursor: grab;"}
+        `}
+        />
+      {/if}
     {/each}
   {/if}
 </div>
+
+<style>
+  :root {
+    --barLength: 18px;
+  }
+
+  .point-anchor {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    font-size: 4px;
+    color: white;
+    user-select: none;
+    width: var(--barLength);
+    height: var(--barLength);
+    border-radius: calc(var(--barLength) / 2);
+  }
+</style>

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { getFlexContext } from "./Flex.svelte";
-  export let grow: number = 0;
-  export let constant: `${number}px` | `${number}%` | null = null;
+  export let size: `${number}px` | `${number}%`;
 
   const parentDirection = getFlexContext();
   let style: string;
@@ -9,17 +8,18 @@
 
   $: {
     let newStyle = "";
-    if (constant != null) {
+    const isConstant = size.endsWith("px");
+    if (isConstant) {
       if (parentDirection === "row") {
-        newStyle = `width: ${constant}; height: 100%;`;
+        newStyle = `width: ${size}; height: 100%;`;
       } else if (parentDirection === "column") {
-        newStyle = `width: 100%; height: ${constant};`;
+        newStyle = `width: 100%; height: ${size};`;
       }
     } else {
       if (parentDirection === "row") {
-        newStyle = `height: 100%; flex-grow: ${grow};`;
+        newStyle = `height: 100%; flex-grow: ${size}; flex-basis: 0;`;
       } else if (parentDirection === "column") {
-        newStyle = `width: 100%; flex-grow: ${grow};`;
+        newStyle = `width: 100%; flex-grow: ${size}; flex-basis: 0;`;
       }
     }
     if (dev) {

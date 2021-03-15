@@ -9,7 +9,7 @@
 <script lang="ts" {flexRoot}>
   import type { FlexData } from "../../lib/gridApi";
 
-  import FlexEditorLayer from "./FlexEdit.svelte";
+  import FlexEdit from "./FlexEdit.svelte";
   import { onDestroy, createEventDispatcher } from "svelte";
   import { getEditContext } from "./EditContext.svelte";
   import { getFlexValuesFromChildren } from "../../lib/gridApi";
@@ -75,9 +75,9 @@
   ${dev && "user-select: none;"}
   `}
 >
-  {#if editData && showEdit && !hideForce}
+  {#if editData && showEdit}
     <div style="position:absolute; z-index: 1;">
-      <FlexEditorLayer
+      <FlexEdit
         type={editorType}
         width={editData.width}
         height={editData.height}

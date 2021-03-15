@@ -85,7 +85,7 @@ export function parseSvelteTemplate(source: string): ParsedSvelteAst {
     "",
     "",
   ];
-  const html = source.replace(scriptFull, "").replace(styleFull, "");
+  const html = source.replace(scriptFull!, "").replace(styleFull!, "");
   const parsed = svelteCompiler.parse(html);
   return {
     script: {
