@@ -35,7 +35,7 @@
 </script>
 
 <!-- controller -->
-<div style="position:relative" bind:this={element}>
+<div style="position:relative;" bind:this={element}>
   {#if type === "horizontal"}
     <MultiSeek
       x={0}

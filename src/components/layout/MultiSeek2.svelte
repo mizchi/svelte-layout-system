@@ -1,27 +1,33 @@
 <script lang="ts">
-  import produce from "immer";
-  import type { FlexGrowValue, PixelValue } from "../../lib/gridApi";
-  import { calcAnchors } from "../../lib/gridApi";
   import { createEventDispatcher } from "svelte";
+  import produce from "immer";
+  import type { FlexGrowValue, PixelValue } from "../../lib/layout";
+  import {
+    makeControllers,
+    moveController,
+    normalizeFlexValues,
+  } from "../../lib/layout";
+
   export let type: "horizontal" | "vertical" = "horizontal";
   export let x: number;
   export let y: number;
 
-  let length: number = 500;
-
-  const dispatch = createEventDispatcher();
+  let length: number = 800;
 
   const barLength = 18;
 
-  let proportions: Array<FlexGrowValue | PixelValue> = [
-    "5",
-    "2",
-    "100px",
-    "3",
-    "100px",
-  ];
+  const dispatch = createEventDispatcher();
 
-  let anchors = calcAnchors(proportions, length);
+  let values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
+    ["1", "1", "1", "100px", "1", "1", "100px"],
+    length
+  );
+  // let values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
+  //   ["1", "1", "1"],
+  //   length
+  // );
+
+  let anchors = makeControllers(values, length);
   let holding: {
     index: number;
     initialPageX: number;
@@ -33,7 +39,11 @@
 
   const onMouseUpOnBar = (ev: any) => {
     if (holding == null) return;
-    // dispatch("seekend", newRate);
+    const delta = ev.pageX - holding.initialPageX;
+    const moved = moveController(values, length, holding.index, delta);
+    console.log("moved", moved, "index", holding.index, "delta", delta);
+    values = moved;
+    // dispatch("seekend", moved);
     holding = null;
     window.document.body.style.cursor = "auto";
   };
@@ -41,7 +51,7 @@
   const onMouseDownOnBar = (ev: any) => {
     const { index, target } = ev.target.dataset ?? {};
     if (target == internalId && index) {
-      const anchor = anchors[index];
+      const anchor = anchors[index]!;
       if (anchor.type === "sized" && anchor.fixed) {
         return;
       }
@@ -57,18 +67,17 @@
 
   const onMouseMoveOnBar = (ev: any) => {
     if (holding == null) return;
-    const currentAnchor = anchors[holding.index];
+    const currentAnchor = anchors[holding.index]!;
     const delta = ev.pageX - holding.initialPageX;
     const nx = holding.firstValue + delta;
     anchors = produce(anchors, (draftAnchors) => {
-      if (currentAnchor.type === "point") {
-        draftAnchors[holding!.index].point = nx;
+      if (currentAnchor!.type === "point") {
+        draftAnchors[holding!.index]!.point = nx;
       } else if (currentAnchor.type === "sized") {
-        draftAnchors[holding!.index].point = nx;
+        draftAnchors[holding!.index]!.point = nx;
       }
     });
   };
-
   // const color = `rgb(${~~(Math.random() * 255)}, ${~~(
   //   Math.random() * 255
   // )}, ${~~(Math.random() * 255)})`;
@@ -113,7 +122,7 @@
     />
 
     {#each anchors as anchor, idx}
-      {#if anchor.type === "point"}
+      {#if anchor.type === "point" && anchor.visible}
         <div
           data-target={internalId}
           data-index={idx}
@@ -136,7 +145,7 @@
         >
           {idx}
         </div>
-      {:else}
+      {:else if anchor.type === "sized"}
         <div
           data-target={internalId}
           data-index={idx}
@@ -180,14 +189,14 @@
 <hr />
 
 <div style="width: {length}px; display: flex; margin-left: -10px;">
-  {#each proportions as prop}
+  {#each values as prop}
     {#if prop.endsWith("px")}
       <div style="width: {prop}; border: 1px dashed black;">
-        {prop}
+        {~~prop}px
       </div>
     {:else}
       <div style="flex-grow: {prop}; border: 1px dashed black">
-        {prop}
+        {~~prop}
       </div>
     {/if}
   {/each}

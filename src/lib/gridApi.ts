@@ -29,52 +29,6 @@ export type GridData = {
   areas: string[][];
 };
 
-type EditbalGridData = GridData & {
-  controllers: Controllers;
-};
-
-// type WindowData = {
-//   id: string;
-//   displayName: string;
-// };
-
-// type LayoutData = {
-//   grid: GridData;
-//   panes: PaneData[];
-//   windows: {
-//     [key: string]: WindowData;
-//   };
-// };
-
-// type PaneData = {
-//   id: string;
-//   displayName?: string;
-//   selectedId?: string;
-//   showTab?: boolean;
-//   windowIds: string[];
-// };
-
-type Controllers = {
-  verticals: [number, number][];
-  horizontals: [number, number][];
-  crosses: [number, number][];
-  idxMap: { [key: string]: string };
-};
-
-function interpose<T>(
-  list: T[],
-  interposer: (a: T, b: T, aIndex: number, bIndex: number) => T
-): T[] {
-  const r: T[] = [];
-  list.forEach((i, idx) => {
-    r.push(i);
-    if (idx !== list.length - 1) {
-      r.push(interposer(list[idx], list[idx + 1], idx, idx + 1));
-    }
-  });
-  return r;
-}
-
 function makeAnchors(nums: number[]) {
   const anchors: number[] = [];
   let last = 0;
@@ -85,7 +39,6 @@ function makeAnchors(nums: number[]) {
   });
   return anchors;
 }
-// const sum = (nums: number[]): number => nums.reduce((s, n) => s + n, 0);
 export function getGridAnchors(grid: GridData, w: number, h: number) {
   const columnsPixels = exprsToPixels(grid.columns, w, "grid");
   const rowsPixels = exprsToPixels(grid.rows, h, "grid");
@@ -188,81 +141,81 @@ export function renderToStyle(grid: GridData) {
   `;
 }
 
-export function buildEditableGridData(
-  original: GridData,
-  spacerSize = 16
-): EditbalGridData {
-  const controllers: Controllers = {
-    verticals: [],
-    horizontals: [],
-    crosses: [],
-    idxMap: {},
-  };
+// export function buildEditableGridData(
+//   original: GridData,
+//   spacerSize = 16
+// ): EditbalGridData {
+//   const controllers: Controllers = {
+//     verticals: [],
+//     horizontals: [],
+//     crosses: [],
+//     idxMap: {},
+//   };
 
-  // build idx to name
+//   // build idx to name
 
-  original.areas.forEach((rows, i) => {
-    rows.forEach((name, j) => {
-      controllers.idxMap[`${i}-${j}`] = name;
-    });
-  });
+//   original.areas.forEach((rows, i) => {
+//     rows.forEach((name, j) => {
+//       controllers.idxMap[`${i}-${j}`] = name;
+//     });
+//   });
 
-  // rebuild rows
-  const rows = interpose(original.rows, () => numberToPixel(spacerSize));
+//   // rebuild rows
+//   const rows = interpose(original.rows, () => numberToPixel(spacerSize));
 
-  // rebuild columns
-  const columns = interpose(original.columns, () => numberToPixel(spacerSize));
+//   // rebuild columns
+//   const columns = interpose(original.columns, () => numberToPixel(spacerSize));
 
-  // rebuild areas
-  const rowLength = original.areas[0].length;
+//   // rebuild areas
+//   const rowLength = original.areas[0].length;
 
-  const areasRowUpdated = original.areas.map((rows, i) => {
-    return interpose(rows, (a, b, j) => {
-      if (a === b) {
-        return a;
-      } else {
-        const t = `v-${i}-${j}`;
-        controllers.verticals.push([i, j]);
-        return t;
-      }
-    });
-  });
+//   const areasRowUpdated = original.areas.map((rows, i) => {
+//     return interpose(rows, (a, b, j) => {
+//       if (a === b) {
+//         return a;
+//       } else {
+//         const t = `v-${i}-${j}`;
+//         controllers.verticals.push([i, j]);
+//         return t;
+//       }
+//     });
+//   });
 
-  // TODO: connect with vertical
-  const areas = interpose(areasRowUpdated, (_0, _1, i) => {
-    const spaced = new Array(rowLength).fill(0).map((_, j) => {
-      if (original.areas[i][j] === original.areas[i + 1][j]) {
-        return original.areas[i][j];
-      } else {
-        const t = `h-${i}-${j}`;
-        controllers.horizontals.push([i, j]);
-        return t;
-      }
-    });
+//   // TODO: connect with vertical
+//   const areas = interpose(areasRowUpdated, (_0, _1, i) => {
+//     const spaced = new Array(rowLength).fill(0).map((_, j) => {
+//       if (original.areas[i][j] === original.areas[i + 1][j]) {
+//         return original.areas[i][j];
+//       } else {
+//         const t = `h-${i}-${j}`;
+//         controllers.horizontals.push([i, j]);
+//         return t;
+//       }
+//     });
 
-    return interpose(spaced, (a, _, j) => {
-      if (
-        original.areas[i][j] === original.areas[i + 1][j] &&
-        original.areas[i][j] === original.areas[i][j + 1] &&
-        original.areas[i][j] === original.areas[i + 1][j + 1]
-      ) {
-        return original.areas[i][j];
-      }
+//     return interpose(spaced, (a, _, j) => {
+//       if (
+//         original.areas[i][j] === original.areas[i + 1][j] &&
+//         original.areas[i][j] === original.areas[i][j + 1] &&
+//         original.areas[i][j] === original.areas[i + 1][j + 1]
+//       ) {
+//         return original.areas[i][j];
+//       }
 
-      const t = `c-${i}-${j}`;
-      controllers.crosses.push([i, j]);
-      return t;
-    });
-  });
-  return {
-    rows,
-    columns,
-    fixedColumns: original.fixedColumns,
-    fixedRows: original.fixedRows,
-    areas,
-    controllers,
-  };
-}
+//       const t = `c-${i}-${j}`;
+//       controllers.crosses.push([i, j]);
+//       return t;
+//     });
+//   });
+//   return {
+//     rows,
+//     columns,
+//     fixedColumns: original.fixedColumns,
+//     fixedRows: original.fixedRows,
+//     areas,
+//     controllers,
+//   };
+// }
 
 export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
   const style = getComputedStyle(target);
@@ -312,18 +265,44 @@ function toNum<T extends UnitSuffix>(expr: Unit<T>, suffix: T): number {
   return Number(raw);
 }
 
+type Value = ConstValue | RatioValue;
+type ConstValue = {
+  type: "static";
+  value: number;
+};
+
+type RatioValue = {
+  type: "ratio";
+  value: number;
+};
+
+function toInternalValue(proportion: FlexGrowValue | PixelValue): Value {
+  if (hasSuffix(proportion, "px")) {
+    return {
+      type: "static",
+      value: toNum(proportion, "px"),
+    };
+  } else {
+    return {
+      type: "ratio",
+      value: toNum(proportion, ""),
+    };
+  }
+}
+
 export function calcAnchors(
-  proportions: Array<FlexGrowValue | PixelValue>,
+  rawProportions: Array<FlexGrowValue | PixelValue>,
   maxSize: number
 ): Array<PointAnchor | SizedAnchor> {
+  const values = rawProportions.map(toInternalValue);
+
   let proportionSum = 0;
   let pixelSum = 0;
-  for (const v of proportions) {
-    if (hasSuffix(v, "px")) {
-      const n = toNum(v, "px")!;
-      pixelSum += n;
+  for (const v of values) {
+    if (v.type === "static") {
+      pixelSum += v.value;
     } else {
-      proportionSum += toNum(v, "")!;
+      proportionSum += v.value;
     }
   }
 
@@ -331,74 +310,62 @@ export function calcAnchors(
   const restSize = maxSize - pixelSum;
 
   let progress = 0;
-  for (let i = 0; i < proportions.length; i++) {
+  for (let i = 0; i < values.length; i++) {
     const isFirst = i === 0;
-    const isLast = i === proportions.length - 1;
+    const isLast = i === values.length - 1;
     const isSizedFixed = isFirst || isLast;
 
-    const v = proportions[i];
-    const next = proportions[i + 1];
-    const prev = proportions[i - 1];
+    const next = values[i + 1];
+    const cur = values[i]!;
+    const prev = values[i - 1];
 
-    // skip: sized 1 sized
+    // skip: 100px [1] 1
     if (
-      hasSuffix(v, "") &&
-      prev &&
-      hasSuffix(prev, "px") &&
-      next &&
-      hasSuffix(next, "px")
+      prev?.type === "static" &&
+      cur.type === "ratio" &&
+      next?.type === "ratio"
     ) {
-      const proportion = toNum(v, "")!;
-      const px = (restSize * proportion) / proportionSum;
+      const px = (restSize * cur.value) / proportionSum;
       progress += px;
       continue;
     }
+
+    // skip: prev is static
+    // skip: 100px [1] 1
+    if (prev?.type === "static" && cur.type === "ratio") {
+      continue;
+    }
     // const
-    if (hasSuffix(v, "px")) {
-      const px = toNum(v, "px")!;
+    if (cur?.type === "static") {
       anchors.push({
         type: "sized",
         point: progress,
-        length: px,
+        length: cur.value,
         fixed: isSizedFixed,
       });
-      progress += px;
+      progress += cur.value;
     } else {
-      const proportion = toNum(v, "")!;
-      const px = (restSize * proportion) / proportionSum;
+      const px = (restSize * cur.value) / proportionSum;
       anchors.push({ type: "point", point: progress });
+
+      // if (prev?.type === "static") {
+      //   if (anchors[anchors.length - 1]?.type === "sized") {
+      //   }
+      //   // if left is static, skip anchor
+      //   // console.log("prev is static", prev);
+      //   // throw "stop";
+      // } else {
+      //   // put anchor
+      //   anchors.push({ type: "point", point: progress });
+      // }
+
       progress += px;
     }
   }
 
-  if (anchors[0].type === "point" && anchors[0].point === 0) {
+  if (anchors[0]!.type === "point" && anchors[0]!.point === 0) {
     anchors = anchors.slice(1);
   }
 
   return anchors;
 }
-
-let proportions: Array<FlexGrowValue | PixelValue> = [
-  "5", // 100
-  "2", // 40
-  "200px",
-  "3", // 60
-  "100px",
-];
-
-let expected = [
-  { type: "point", point: 100 },
-  { type: "sized", point: 140, length: 200, fixed: false },
-  { type: "sized", point: 400, length: 100, fixed: true },
-];
-
-// let _proportions: Array<FlexGrowValue | PixelValue> = [
-//   "5",
-//   "2",
-//   "80px",
-//   "3",
-//   "100px",
-// ];
-
-// const xxx = calcAnchors(proportions, 500);
-// console.log(xxx);

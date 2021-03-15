@@ -9,9 +9,11 @@
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.2",
     "@tsconfig/svelte": "^1.0.10",
+    "@types/jest": "^26.0.20",
     "@types/node": "^14.14.34",
     "autoprefixer": "^10.2.5",
     "buffer": "^6.0.3",
+    "jest": "^26.6.3",
     "path-browserify": "^1.0.1",
     "postcss": "^8.2.7",
     "rollup-plugin-node-polyfills": "^0.2.1",
@@ -20,12 +22,14 @@
     "svelte": "^3.35.0",
     "svelte-preprocess": "^4.6.9",
     "tailwindcss": "^2.0.3",
+    "ts-jest": "^26.5.3",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "vite": "^2.0.5"
   },
   "dependencies": {
     "@mizchi/svelte-printer": "^2.1.7",
+    "@types/prettier": "^2.2.2",
     "css": "^3.0.0",
     "immer": "^8.0.1",
     "preact": "^10.5.12",
