@@ -4,9 +4,6 @@
   import { getEditContext } from "./EditContext.svelte";
 
   const { editMode } = getEditContext();
-  const dev = true;
-
-  let editing = false;
 
   export let text: string;
 
@@ -19,26 +16,19 @@
 
   $: showEdit = $editMode === "block";
 
-  const onKeydown = (ev: any) => {
+  const onKeydown = (_ev: any) => {
     if (onComposition) return;
-    if (ev.key === "Escape" || ev.key === "Enter") {
-      editing = false;
-    }
   };
 
-  const onBlur = (ev: any) => (editing = false);
   $: inputStyle = `width:${editingValue!.length * 0.6}em`;
-  // let canvas: null | HTMLCanvasElement = null;
 </script>
 
 <div class="text-block" {style}>
   {#if showEdit}
-    <!-- <canvas bind:this={canvas} style="display: none;" /> -->
     <input
       bind:this={inputElement}
       bind:value={editingValue}
       on:keydown={onKeydown}
-      on:blur={onBlur}
       on:compositionstart={onCompositionStart}
       on:compositionend={onCompositionEnd}
       style={inputStyle}

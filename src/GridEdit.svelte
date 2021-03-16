@@ -25,21 +25,21 @@
     };
   });
 
-  const onSeekEnd = (ev: CustomEvent<number[]>) => {
-    const newGrid = {
-      ...grid,
-      columns: ev.detail.map((rate) => `${rate}fr`),
-    };
-    dispatch("change-grid", newGrid);
-  };
+  // const onSeekEnd = (ev: CustomEvent<number[]>) => {
+  //   const newGrid = {
+  //     ...grid,
+  //     columns: ev.detail.map((rate) => `${rate}fr`),
+  //   };
+  //   dispatch("change-grid", newGrid);
+  // };
 
-  const onSeekEndVertical = (ev: CustomEvent<number[]>) => {
-    const newGrid = {
-      ...grid,
-      rows: ev.detail.map((rate) => `${rate}fr`),
-    };
-    dispatch("change-grid", newGrid);
-  };
+  // const onSeekEndVertical = (ev: CustomEvent<number[]>) => {
+  //   const newGrid = {
+  //     ...grid,
+  //     rows: ev.detail.map((rate) => `${rate}fr`),
+  //   };
+  //   dispatch("change-grid", newGrid);
+  // };
 
   let element: SVGSVGElement;
   const onClose = (ev: any) => {
