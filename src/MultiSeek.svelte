@@ -1,8 +1,6 @@
 <script lang="ts">
   import type { FlexChildren, FlexGrowValue, PixelValue } from "./types";
-
   import { createEventDispatcher } from "svelte";
-  import produce from "immer";
   import { makeControllers, moveController } from "./lib/layout";
 
   export let type: "horizontal" | "vertical" = "horizontal";
@@ -64,13 +62,20 @@
         : ev.pageY - holding.initialPageY;
 
     const nx = holding.firstValue + delta;
-    anchors = produce(anchors, (draftAnchors) => {
-      if (currentAnchor!.type === "point") {
-        draftAnchors[holding!.index]!.point = nx;
-      } else if (currentAnchor.type === "sized") {
-        draftAnchors[holding!.index]!.point = nx;
-      }
-    });
+    // anchors = produce(anchors, (draftAnchors) => {
+    //   if (currentAnchor!.type === "point") {
+    //     draftAnchors[holding!.index]!.point = nx;
+    //   } else if (currentAnchor.type === "sized") {
+    //     draftAnchors[holding!.index]!.point = nx;
+    //   }
+    // });
+    const newAnchors = anchors.slice();
+    if (currentAnchor!.type === "point") {
+      newAnchors[holding!.index]!.point = nx;
+    } else if (currentAnchor.type === "sized") {
+      newAnchors[holding!.index]!.point = nx;
+    }
+    anchors = newAnchors;
   };
   const color = `rgb(${~~(Math.random() * 128)}, ${~~(
     Math.random() * 128

@@ -9,12 +9,16 @@ export default {
   input: "src/index.ts",
   external: ["svelte", "svelte/internal", "svelte/store"],
   plugins: [
-    nodeResolve(),
+    nodeResolve({
+      include: "node_modules/**",
+    }),
     cjs(),
     ts(),
     svelte({
       emitCss: false,
-      hydratable: true,
+      compilerOptions: {
+        hydratable: true,
+      },
       preprocess: autoPreprocess({}),
     }),
   ],
