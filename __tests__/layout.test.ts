@@ -1,4 +1,4 @@
-import { makeControllers } from "../layout";
+import { makeControllers } from "../src/lib/layout";
 
 it("r", () => {
   expect(makeControllers(["1"], 100)).toEqual([
