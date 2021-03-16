@@ -1,33 +1,14 @@
-type UnitSuffix = "px" | "em" | "rem" | "%" | "fr" | "";
-type Unit<Suffix extends UnitSuffix> = `${number}${Suffix}`;
-
-export type FlexGrowValue = Unit<"">;
-export type PixelValue = Unit<"px">;
-export type EmValue = Unit<"em">;
-export type RemValue = Unit<"rem">;
-export type PercentValue = Unit<"%">;
-export type FractionValue = Unit<"fr">;
-
-export type FlexData = {
-  direction: "row" | "column";
-  proportions: Array<FlexGrowValue | PixelValue>;
-};
-
-type PointAnchor = {
-  type: "point";
-  point: number;
-  visible: boolean;
-  index: number;
-};
-
-type SizedAnchor = {
-  type: "sized";
-  point: number;
-  length: number;
-  fixed: boolean;
-  index: number;
-};
-
+import type {
+  UnitSuffix,
+  Unit,
+  FlexGrowValue,
+  PixelValue,
+  PointController,
+  SizedController,
+  GridData,
+  FlexData,
+  FlexChildren,
+} from "../types";
 function hasSuffix<Suffix extends UnitSuffix>(
   value: string,
   suffix: Suffix
@@ -68,9 +49,9 @@ function toInternalValue(
 }
 
 export function normalizeFlexValues(
-  rawValues: Array<FlexGrowValue | PixelValue>,
+  rawValues: FlexChildren,
   maxSize: number
-): Array<FlexGrowValue | PixelValue> {
+): FlexChildren {
   const values = rawValues.map(toInternalValue);
   const calculatedValues = calcRealSizes(values, maxSize);
   return values.map((v, idx) => {
@@ -104,12 +85,12 @@ function calcRealSizes(values: Array<InternalValue>, maxSize: number) {
 }
 
 export function moveController(
-  rawValues: Array<FlexGrowValue | PixelValue>,
+  children: FlexChildren,
   maxSize: number,
-  index: keyof typeof rawValues,
+  index: keyof typeof children,
   delta: number
-): Array<FlexGrowValue | PixelValue> {
-  const values = rawValues.map(toInternalValue);
+): FlexChildren {
+  const values = children.map(toInternalValue);
   const realValues = calcRealSizes(values, maxSize);
   const currentController = values[index] as InternalValue;
 
@@ -152,9 +133,11 @@ export function moveController(
 }
 
 export function makeControllers(
-  rawValues: Array<FlexGrowValue | PixelValue>,
+  rawValues: FlexChildren,
   maxSize: number
-): Array<PointAnchor | SizedAnchor> {
+): Array<PointController | SizedController> {
+  let controllers: Array<PointController | SizedController> = [];
+
   const values = rawValues.map(toInternalValue);
   let ratioSum = 0;
   let pixelSum = 0;
@@ -165,8 +148,6 @@ export function makeControllers(
       ratioSum += v.ratio;
     }
   }
-
-  let anchors: Array<PointAnchor | SizedAnchor> = [];
 
   const restSize = maxSize - pixelSum;
 
@@ -180,7 +161,7 @@ export function makeControllers(
       const isStartPoint = size === 0 && progress === 0;
       const isEndPoint = size === 0 && progress >= progress + size;
 
-      anchors.push({
+      controllers.push({
         type: "point",
         point: progress,
         index: i,
@@ -190,7 +171,7 @@ export function makeControllers(
       progress += size;
     } else if (cur.type === "static") {
       const isSizedFixed = i === 0 || i === values.length - 1;
-      anchors.push({
+      controllers.push({
         type: "sized",
         point: progress,
         length: cur.size,
@@ -200,7 +181,7 @@ export function makeControllers(
       progress += cur.size;
     }
   }
-  return anchors;
+  return controllers;
 }
 
 export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
@@ -223,6 +204,74 @@ export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
   }
   return {
     direction: flexDirection as "row" | "column",
-    proportions: flexes,
+    children: flexes,
   };
+}
+
+export function getGridAnchors(grid: GridData, w: number, h: number) {
+  const columnsPixels = exprsToPixels(grid.columns, w, "grid");
+  const rowsPixels = exprsToPixels(grid.rows, h, "grid");
+  return {
+    columnAnchors: makeAnchors(columnsPixels),
+    rowsAnchors: makeAnchors(rowsPixels),
+  };
+}
+
+function makeAnchors(nums: number[]) {
+  const anchors: number[] = [];
+  let last = 0;
+  nums.forEach((p, idx) => {
+    if (nums.length - 1 === idx) return;
+    anchors.push(last + p);
+    last += p;
+  });
+  return anchors;
+}
+
+function exprsToPixels(
+  exprs: string[],
+  maxSize: number,
+  type: "flex" | "grid"
+): number[] {
+  const pxSum = exprs
+    .filter((n) => n.endsWith("px"))
+    .map(pixelToNumber)
+    .reduce((sum, i) => sum + i, 0);
+
+  const frSum = exprs
+    .filter((n) => {
+      if (type === "grid") {
+        return n.endsWith("fr");
+      } else {
+        return !(n.endsWith("fr") || n.endsWith("px"));
+      }
+    })
+    .map(fractionToNumber)
+    .reduce((sum, i) => sum + i, 0);
+
+  const fractionSize = (maxSize - pxSum) / frSum;
+  return exprs.map((n) => {
+    if (n.includes("px")) {
+      return pixelToNumber(n);
+    } else {
+      const fr = fractionToNumber(n);
+      return fractionSize * fr;
+    }
+  });
+}
+
+export function pixelToNumber(expr: string | number): number {
+  if (typeof expr === "number") {
+    return expr;
+  } else {
+    return Number(expr.replace(/px$/, ""));
+  }
+}
+
+export function fractionToNumber(expr: string | number): number {
+  if (typeof expr === "number") {
+    return expr;
+  } else {
+    return Number(expr.replace(/fr$/, ""));
+  }
 }

@@ -1,9 +1,5 @@
-import {
-  FlexGrowValue,
-  PixelValue,
-  moveController,
-  normalizeFlexValues,
-} from "../layout";
+import { moveController, normalizeFlexValues } from "../layout";
+import type { FlexGrowValue, PixelValue } from "../../types";
 
 it("move right", () => {
   const values: Array<FlexGrowValue | PixelValue> = ["1", "1"];

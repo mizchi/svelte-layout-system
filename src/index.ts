@@ -1,19 +1,4 @@
-import App from "./components/App2.svelte";
-// import App from "./components/App.svelte";
-
-let app: any;
-async function main() {
-  app = new App({ target: document.body });
-}
-
-main().catch(console.error);
-
-// @ts-ignore
-if (import.meta.hot) {
-  // @ts-ignore
-  import.meta.hot.accept();
-  // @ts-ignore
-  import.meta.hot.dispose(() => {
-    app?.$destroy();
-  });
-}
+export * from "./lib/layout";
+export { default as MultiSeek } from "./MultiSeek.svelte";
+export { default as Flex } from "./Flex.svelte";
+export { default as FlexItem } from "./FlexItem.svelte";

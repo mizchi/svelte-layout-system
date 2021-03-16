@@ -1,4 +1,4 @@
-import { makeControllers, FlexGrowValue, PixelValue } from "../layout";
+import { makeControllers } from "../layout";
 
 it("r", () => {
   expect(makeControllers(["1"], 100)).toEqual([
