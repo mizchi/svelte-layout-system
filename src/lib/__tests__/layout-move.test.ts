@@ -46,7 +46,6 @@ it("move point between ratios", () => {
     300
   );
   const next = moveController(values, 300, 1, -10);
-  console.log(next);
   expect(moveController(values, 300, 1, -10)).toEqual(["90", "110", "100"]);
 });
 
