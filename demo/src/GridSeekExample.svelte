@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { GridData } from "../..";
+  import type { GridData } from "./layoutSystem";
   import GridEditorLayer from "./GridEdit.svelte";
   let grid: GridData = {
     rows: ["1fr", "40px", "1fr"],

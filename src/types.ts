@@ -5,12 +5,16 @@ export type FlexGrowValue = Unit<"">;
 export type PixelValue = Unit<"px">;
 export type EmValue = Unit<"em">;
 export type RemValue = Unit<"rem">;
-export type PercentValue = Unit<"%">;
+export type PercentageValue = Unit<"%">;
 export type FractionValue = Unit<"fr">;
 
 export type FlexChildren = Array<
   FlexGrowValue | PixelValue
   // | RemValue | PercentValue
+>;
+
+export type InputFlexChildren = Array<
+  FlexGrowValue | PixelValue | RemValue | PercentageValue
 >;
 
 export type GridData = {

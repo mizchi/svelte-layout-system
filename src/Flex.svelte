@@ -29,6 +29,7 @@
 
   let started = false;
   $: {
+    console.log("changed");
     if (!started && dev && flexRoot) {
       started = true;
       const observer = new ResizeObserver((entries: any) => {

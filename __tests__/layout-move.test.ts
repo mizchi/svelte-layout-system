@@ -41,19 +41,18 @@ it("move point between ratios", () => {
   // 100 100  100
   // | - [|] - |
   //     <-
-  let values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
+  const values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
     ["1", "1", "1"],
-    300
+    { parentSize: 300 }
   );
-  const next = moveController(values, 300, 1, -10);
   expect(moveController(values, 300, 1, -10)).toEqual(["90", "110", "100"]);
 });
 
 it.skip("move static between ratios", () => {
   // normalizeFlexValues
-  let values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
+  const values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
     ["1", "1", "1", "100px", "1", "1", "100px"],
-    700
+    { parentSize: 700 }
   );
 
   expect(moveController(values, 700, 1, -10)).toEqual([

@@ -8,12 +8,16 @@ import type {
   GridData,
   FlexData,
   FlexChildren,
+  RemValue,
+  PercentageValue,
+  InputFlexChildren,
 } from "../types";
+
 function hasSuffix<Suffix extends UnitSuffix>(
   value: string,
   suffix: Suffix
 ): value is `${number}${Suffix}` {
-  return new RegExp(`[0-9]${suffix}\$`).test(value);
+  return new RegExp(`[0-9]${suffix}$`).test(value);
 }
 
 function toNum<T extends UnitSuffix>(expr: Unit<T>, suffix: T): number {
@@ -32,28 +36,71 @@ type RatioValue = {
   ratio: number;
 };
 
-function toInternalValue(
-  proportion: FlexGrowValue | PixelValue
+type CalculationEnv = {
+  remSize: number;
+  parentSize: number;
+};
+
+/* 
+  Make values to internal values
+ */
+function toHandleableValue(
+  value: FlexGrowValue | PixelValue | RemValue | PercentageValue,
+  env: CalculationEnv
 ): InternalValue {
-  if (hasSuffix(proportion, "px")) {
+  if (hasSuffix(value, "rem")) {
     return {
       type: "static",
-      size: toNum(proportion, "px"),
+      size: toNum(value, "rem") * env.remSize,
+    };
+  } else if (hasSuffix(value, "%")) {
+    return {
+      type: "static",
+      size: (toNum(value, "%") / 100) * env.parentSize,
+    };
+  } else if (hasSuffix(value, "px")) {
+    return {
+      type: "static",
+      size: toNum(value, "px"),
     };
   } else {
     return {
       type: "ratio",
-      ratio: toNum(proportion, ""),
+      ratio: toNum(value, ""),
+    };
+  }
+}
+
+function toInternalValue(value: FlexGrowValue | PixelValue): InternalValue {
+  if (hasSuffix(value, "px")) {
+    return {
+      type: "static",
+      size: toNum(value, "px"),
+    };
+  } else {
+    return {
+      type: "ratio",
+      ratio: toNum(value, ""),
     };
   }
 }
 
 export function normalizeFlexValues(
-  rawValues: FlexChildren,
-  maxSize: number
+  rawValues: InputFlexChildren,
+  env: {
+    remSize?: number;
+    parentSize: number;
+  }
 ): FlexChildren {
-  const values = rawValues.map(toInternalValue);
-  const calculatedValues = calcRealSizes(values, maxSize);
+  // pixel or rate
+  const values = rawValues.map((v) =>
+    toHandleableValue(v, {
+      parentSize: env.parentSize,
+      remSize: env.remSize ?? 16,
+    })
+  );
+
+  const calculatedValues = calcRealSizes(values, env.parentSize);
   return values.map((v, idx) => {
     if (v.type === "ratio") {
       const calculatedVar = calculatedValues[idx]!;
@@ -136,7 +183,7 @@ export function makeControllers(
   rawValues: FlexChildren,
   maxSize: number
 ): Array<PointController | SizedController> {
-  let controllers: Array<PointController | SizedController> = [];
+  const controllers: Array<PointController | SizedController> = [];
 
   const values = rawValues.map(toInternalValue);
   let ratioSum = 0;
@@ -208,7 +255,14 @@ export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
   };
 }
 
-export function getGridAnchors(grid: GridData, w: number, h: number) {
+export function getGridAnchors(
+  grid: GridData,
+  w: number,
+  h: number
+): {
+  columnAnchors: number[];
+  rowsAnchors: number[];
+} {
   const columnsPixels = exprsToPixels(grid.columns, w, "grid");
   const rowsPixels = exprsToPixels(grid.rows, h, "grid");
   return {
@@ -234,8 +288,8 @@ function exprsToPixels(
   type: "flex" | "grid"
 ): number[] {
   const pxSum = exprs
-    .filter((n) => n.endsWith("px"))
-    .map(pixelToNumber)
+    .filter((n) => hasSuffix(n, "px"))
+    .map((n) => toNum(n as PixelValue, "px"))
     .reduce((sum, i) => sum + i, 0);
 
   const frSum = exprs

@@ -15,6 +15,11 @@
   const onSeekEnd = (ev: CustomEvent<FlexChildren>) => {
     dispatch("change-flex", ev.detail);
   };
+
+  import { writable } from "svelte/store";
+
+  const store = writable([]);
+  $store.length; // incorrect no-unsafe-member-access error
 </script>
 
 <div style="position:relative;">

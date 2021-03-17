@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { FlexChildren } from "../..";
-  import { Flex, FlexItem } from "../..";
+  import type { FlexChildren } from "./layoutSystem";
+  import { Flex, FlexItem } from "./layoutSystem";
 
   import { getEditContext } from "./EditContext.svelte";
   import TextBlock from "./TextBlock.svelte";

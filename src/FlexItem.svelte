@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getFlexContext } from "./Flex.svelte";
-  export let length: `${number}px` | `${number}%`;
+  export let length: `${number}px` | `${number}`;
 
   const parentDirection = getFlexContext();
   let style: string;

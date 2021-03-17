@@ -1,3 +1,4 @@
+/* eslint-disable */
 /// <reference types="svelte" />
 import { SvelteComponentTyped } from "svelte";
 
