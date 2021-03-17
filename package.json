@@ -19,6 +19,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-svelte3": "^3.1.2",
     "jest": "^26.6.3",
+    "lerna": "^4.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
@@ -33,5 +34,6 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "name": "svelte-layout-system"
 }
