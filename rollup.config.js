@@ -16,9 +16,9 @@ export default {
     ts(),
     svelte({
       emitCss: false,
-      // compilerOptions: {
-      //   hydratable: true,
-      // },
+      compilerOptions: {
+        hydratable: true,
+      },
       preprocess: autoPreprocess({}),
     }),
   ],

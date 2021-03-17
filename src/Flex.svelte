@@ -9,7 +9,7 @@
 <script lang="ts">
   import type { FlexData } from "./types";
   import FlexEdit from "./FlexEdit.svelte";
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy } from "svelte";
   import { getFlexValuesFromChildren } from "./lib/layout";
 
   export let direction: "column" | "row" = "row";
@@ -29,7 +29,6 @@
 
   let started = false;
   $: {
-    // console.log("changed flex", started, flexRoot);
     if (dev && !started && flexRoot) {
       started = true;
       const observer = new ResizeObserver((entries: any) => {

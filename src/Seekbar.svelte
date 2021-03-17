@@ -62,13 +62,6 @@
         : ev.pageY - holding.initialPageY;
 
     const nx = holding.firstValue + delta;
-    // anchors = produce(anchors, (draftAnchors) => {
-    //   if (currentAnchor!.type === "point") {
-    //     draftAnchors[holding!.index]!.point = nx;
-    //   } else if (currentAnchor.type === "sized") {
-    //     draftAnchors[holding!.index]!.point = nx;
-    //   }
-    // });
     const newAnchors = anchors.slice();
     if (currentAnchor!.type === "point") {
       newAnchors[holding!.index]!.point = nx;

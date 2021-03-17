@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { FlexData, FlexChildren } from "./types";
-  import MultiSeek from "./MultiSeek.svelte";
+  import Seekbar from "./Seekbar.svelte";
   import { createEventDispatcher } from "svelte";
 
   export let type: "horizontal" | "vertical" = "horizontal";
@@ -15,23 +15,18 @@
   const onSeekEnd = (ev: CustomEvent<FlexChildren>) => {
     dispatch("change-flex", ev.detail);
   };
-
-  import { writable } from "svelte/store";
-
-  const store = writable([]);
-  $store.length; // incorrect no-unsafe-member-access error
 </script>
 
-<div style="position:relative;">
+<div class="flex-edit-layer">
   {#if type === "horizontal"}
-    <MultiSeek
+    <Seekbar
       type="horizontal"
       length={width}
       values={flexData.children}
       on:seekend={onSeekEnd}
     />
   {:else}
-    <MultiSeek
+    <Seekbar
       type="vertical"
       length={height}
       values={flexData.children}
@@ -39,3 +34,9 @@
     />
   {/if}
 </div>
+
+<style>
+  .flex-edit-layer {
+    position: relative;
+  }
+</style>

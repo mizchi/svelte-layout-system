@@ -1,5 +1,5 @@
 // @ts-ignore
-import App from "./App.svelte";
+import App from "../App.svelte";
 
 let app: any;
 async function main() {
