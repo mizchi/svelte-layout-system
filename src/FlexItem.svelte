@@ -4,6 +4,7 @@
 
   const parentDirection = getFlexContext();
   let style: string;
+  // todo: inject
   const dev = true;
 
   $: {
