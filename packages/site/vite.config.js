@@ -7,6 +7,7 @@ const PROD = process.env.NODE_ENV === "production";
 
 export default {
   build: {
+    target: "es2019",
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "index.html"),

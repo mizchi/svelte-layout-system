@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "yarn --cwd .. run build && NODE_ENV=production vite build",
+    "build": "vite build",
     "serve": "vite preview"
   },
   "devDependencies": {

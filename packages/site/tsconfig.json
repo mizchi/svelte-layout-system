@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/svelte",
+  "compilerOptions": {
+    "types": ["vite/client", "jest"],
+    "noUncheckedIndexedAccess": true,
+    "target": "es2017",
+    "module": "esnext",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "importsNotUsedAsValues": "error"
+  }
+}

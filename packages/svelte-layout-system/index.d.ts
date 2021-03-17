@@ -31,4 +31,4 @@ export class FlexItem extends SvelteComponentTyped<
   { default: {} }
 > {}
 
-export class MultiSeek extends SvelteComponentTyped<{}, {}, { default: {} }> {}
+export class Seekbar extends SvelteComponentTyped<{}, {}, { default: {} }> {}

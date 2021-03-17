@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/svelte",
   "compilerOptions": {
-    "types": ["vite/client", "jest"],
+    "types": ["jest"],
     "noUncheckedIndexedAccess": true,
     "target": "es2019",
     "module": "esnext",
