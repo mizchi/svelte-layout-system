@@ -1,6 +1,6 @@
 {
   "name": "svelte-layout-system",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "scripts": {
     "test": "run-p test:*",
     "test:unittest": "jest",
