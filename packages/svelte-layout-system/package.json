@@ -1,6 +1,7 @@
 {
   "name": "svelte-layout-system",
   "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
     "test": "run-p test:*",
     "test:unittest": "jest",
