@@ -42,3 +42,8 @@ export type SizedController = {
   fixed: boolean;
   index: number;
 };
+
+export type FlexContextData = {
+  direction: "row" | "column";
+  editable: boolean;
+};

@@ -9,11 +9,11 @@
   export let height: number; // wip for vertical
 
   const dispatch = createEventDispatcher<{
-    "change-flex": FlexChildren;
+    change: FlexChildren;
   }>();
 
   const onSeekEnd = (ev: CustomEvent<FlexChildren>) => {
-    dispatch("change-flex", ev.detail);
+    dispatch("change", ev.detail);
   };
 </script>
 

@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { FlexChildren } from "./layoutSystem";
-  import { Flex, FlexItem } from "./layoutSystem";
-
+  import type { FlexChildren } from "svelte-layout-system";
+  import { Flex as RawFlex, FlexItem } from "svelte-layout-system";
   import { getEditContext } from "./EditContext.svelte";
   import TextBlock from "./TextBlock.svelte";
   import ImageBlock from "./ImageBlock.svelte";
@@ -42,6 +41,9 @@
   const onClickLayout = () => {
     editMode.set("layout");
   };
+
+  // $: Flex = $editMode === "layout" ? EditableFlex : RawFlex;
+  $: Flex = RawFlex;
 </script>
 
 <div class="h-full w-full">
@@ -65,17 +67,18 @@
     {/if}
   </div>
   <div class="p-4">
-    <Flex
+    <svelte:component
+      this={Flex}
       width="800px"
       height="400px"
       direction="column"
-      on:change-flex={onChangeFlex1}
+      on:change={onChangeFlex1}
     >
       <FlexItem length={flexChildren1[0]}>
         <TextBlock text="header" />
       </FlexItem>
       <FlexItem length={flexChildren1[1]}>
-        <Flex on:change-flex={onChangeFlex2}>
+        <svelte:component this={Flex} on:change={onChangeFlex2}>
           <FlexItem length={flexChildren2[0]}>
             <ImageBlock src="https://i.imgur.com/nAnqC.jpg" id="xxx" />
           </FlexItem>
@@ -85,13 +88,13 @@
           <FlexItem length={flexChildren2[2]}>
             <TextBlock text="right" />
           </FlexItem>
-        </Flex>
+        </svelte:component>
       </FlexItem>
       <FlexItem length={flexChildren1[2]}>
         <ImageBlock src="https://i.imgur.com/nAnqC.jpg" id="xxx" />
       </FlexItem>
       <FlexItem length={flexChildren1[3]}>
-        <Flex on:change-flex={onChangeFlex3}>
+        <svelte:component this={Flex} on:change={onChangeFlex3}>
           {#each flexChildren3 as c, idx}
             {#if c.endsWith("px")}
               <FlexItem length={c}>
@@ -103,8 +106,8 @@
               </FlexItem>
             {/if}
           {/each}
-        </Flex>
+        </svelte:component>
       </FlexItem>
-    </Flex>
+    </svelte:component>
   </div>
 </div>

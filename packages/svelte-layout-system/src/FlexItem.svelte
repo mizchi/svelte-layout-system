@@ -1,29 +1,26 @@
 <script lang="ts">
-  import { getFlexContext } from "./Flex.svelte";
+  import { getFlexContext } from "./EditableFlex.svelte";
+  import { hasSuffix } from "./lib/layout";
   export let length: `${number}px` | `${number}`;
+  const flexContext = getFlexContext();
 
-  const parentDirection = getFlexContext();
   let style: string;
-  // todo: inject
-  const dev = true;
-
   $: {
     let newStyle = "";
-    const isConstant = length.endsWith("px");
-    if (isConstant) {
-      if (parentDirection === "row") {
+    if (hasSuffix(length, "px")) {
+      if (flexContext.direction === "row") {
         newStyle = `width: ${length}; height: 100%;`;
-      } else if (parentDirection === "column") {
+      } else if (flexContext.direction === "column") {
         newStyle = `width: 100%; height: ${length};`;
       }
     } else {
-      if (parentDirection === "row") {
+      if (flexContext.direction === "row") {
         newStyle = `height: 100%; flex-grow: ${length}; flex-basis: 0;`;
-      } else if (parentDirection === "column") {
+      } else if (flexContext.direction === "column") {
         newStyle = `width: 100%; flex-grow: ${length}; flex-basis: 0;`;
       }
     }
-    if (dev) {
+    if (flexContext.editable) {
       newStyle += `outline: 1px dashed black`;
     }
     style = newStyle;

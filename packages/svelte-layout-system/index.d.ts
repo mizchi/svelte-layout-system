@@ -11,14 +11,23 @@ import type {
 
 export * from "./src/types";
 
+export type FlexProps = {
+  direction?: "row" | "column";
+  width?: PixelValue | PercentValue | "auto";
+  height?: PixelValue | PercentValue | "auto";
+};
+
 export class Flex extends SvelteComponentTyped<
+  FlexProps,
   {
-    direction?: "row" | "column";
-    width?: PixelValue | PercentValue | "auto";
-    height?: PixelValue | PercentValue | "auto";
+    change: { children: FlexChildren };
   },
+  { default: {} }
+> {}
+export class EditableFlex extends SvelteComponentTyped<
+  FlexProps,
   {
-    "change-flex": { children: FlexChildren };
+    change: { children: FlexChildren };
   },
   { default: {} }
 > {}

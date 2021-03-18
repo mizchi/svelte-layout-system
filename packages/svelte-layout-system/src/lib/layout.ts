@@ -13,7 +13,7 @@ import type {
   InputFlexChildren,
 } from "../types";
 
-function hasSuffix<Suffix extends UnitSuffix>(
+export function hasSuffix<Suffix extends UnitSuffix>(
   value: string,
   suffix: Suffix
 ): value is `${number}${Suffix}` {
