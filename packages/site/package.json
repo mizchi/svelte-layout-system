@@ -1,7 +1,7 @@
 {
   "name": "svelte-layout-system-demo",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -27,6 +27,6 @@
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.2.0",
     "rollup": "^2.40.0",
-    "svelte-layout-system": "^0.1.1"
+    "svelte-layout-system": "^0.1.2"
   }
 }
