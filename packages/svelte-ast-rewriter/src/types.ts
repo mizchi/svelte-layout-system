@@ -1,6 +1,6 @@
 import type { SourceFile } from "typescript";
-import { Stylesheet } from "css";
-import { Ast } from "svelte/types/compiler/interfaces";
+import type { Stylesheet } from "css";
+import type { Ast } from "svelte/types/compiler/interfaces";
 export type StringAttribute = {
   type: "string";
   value: string;

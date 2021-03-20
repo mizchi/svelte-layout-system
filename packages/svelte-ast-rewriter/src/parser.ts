@@ -1,7 +1,8 @@
+import type { Preparsed, ParsedSvelteAst } from "./types";
+
 import { parse as parseCss } from "css";
 import * as svelteCompiler from "svelte/compiler";
 import ts from "typescript";
-import type { Preparsed, ParsedSvelteAst } from "./types";
 
 export const scriptRegexp = /<!--[^]*?-->|<script(\s[^]*?)?(?:>([^]*?)<\/script>|\/>)/;
 export const styleRegexp = /<!--[^]*?-->|<style(\s[^]*?)?(?:>([^]*?)<\/style>|\/>)/;
