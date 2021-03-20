@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/svelte",
+  "compilerOptions": {
+    "types": ["jest"],
+    "target": "es2019",
+    "module": "esnext",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  }
+}
