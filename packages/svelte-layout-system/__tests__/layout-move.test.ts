@@ -48,7 +48,7 @@ it("move point between ratios", () => {
   expect(moveController(values, 300, 1, -10)).toEqual(["90", "110", "100"]);
 });
 
-it.skip("move static between ratios", () => {
+it("move static between ratios", () => {
   // normalizeFlexValues
   const values: Array<FlexGrowValue | PixelValue> = normalizeFlexValues(
     ["1", "1", "1", "100px", "1", "1", "100px"],
@@ -65,60 +65,3 @@ it.skip("move static between ratios", () => {
     "100px",
   ]);
 });
-
-// it("r | r", async () => {
-//   expect(makeControllers(["3", "1"], 100)).toEqual([
-//     { type: "point", point: 75 },
-//   ]);
-// });
-
-// it("s | r", async () => {
-//   expect(makeControllers(["100px", "1"], 150)).toEqual([
-//     { type: "sized", point: 0, length: 100, fixed: true },
-//   ]);
-// });
-
-// it("r | s", async () => {
-//   expect(makeControllers(["1", "100px"], 150)).toEqual([
-//     { type: "sized", point: 50, length: 100, fixed: true },
-//   ]);
-// });
-
-// it("s | r | r | s", async () => {
-//   expect(makeControllers(["10px", "1", "1", "10px"], 100)).toEqual([
-//     { type: "sized", point: 0, length: 10, fixed: true },
-//     { type: "point", point: 50 },
-//     { type: "sized", point: 90, length: 10, fixed: true },
-//   ]);
-// });
-
-// it("r | s | r", async () => {
-//   expect(makeControllers(["1", "10px", "1"], 100)).toEqual([
-//     { type: "sized", point: 45, length: 10, fixed: false },
-//   ]);
-// });
-
-// it("s | r | r | r | s", async () => {
-//   expect(makeControllers(["10px", "1", "1", "1", "10px"], 110)).toEqual([
-//     { type: "sized", point: 0, length: 10, fixed: true },
-//     { type: "point", point: 40 },
-//     { type: "point", point: 70 },
-//     { type: "sized", point: 100, length: 10, fixed: true },
-//   ]);
-// });
-
-// it("s | r | s | r | s", async () => {
-//   expect(makeControllers(["10px", "1", "10px", "1", "10px"], 50)).toEqual([
-//     { type: "sized", point: 0, length: 10, fixed: true },
-//     { type: "sized", point: 20, length: 10, fixed: false },
-//     { type: "sized", point: 40, length: 10, fixed: true },
-//   ]);
-// });
-
-// it("s | r | r | s", async () => {
-//   expect(makeControllers(["100px", "1", "1", "100px"], 300)).toEqual([
-//     { type: "sized", point: 0, length: 100, fixed: true },
-//     { type: "point", point: 150 },
-//     { type: "sized", point: 200, length: 100, fixed: true },
-//   ]);
-// });
