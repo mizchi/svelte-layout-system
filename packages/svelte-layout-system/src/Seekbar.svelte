@@ -78,7 +78,7 @@
     children = moved;
     dispatch("seekend", moved);
 
-    controllers = recalcControllersRange(controllers);
+    controllers = recalcControllersRange(controllers, length);
     holding = null;
     window.document.body.style.cursor = "auto";
   };
@@ -131,7 +131,9 @@
             transform: translate(${-barLength / 2}px, ${-barLength / 2}px);
             ${holding ? "" : "cursor: grab;"}
           `}
-        />
+        >
+          ↔
+        </div>
       {:else if controller.type === "sized"}
         <div
           data-target={internalId}
@@ -173,33 +175,33 @@
   `}
     />
 
-    {#each controllers as anchor, idx}
-      {#if anchor.type === "point" && anchor.visible}
+    {#each controllers as controller, idx}
+      {#if controller.type === "point" && controller.visible}
         <div
-          class="point-anchor"
+          class="point-controller"
           data-target={internalId}
           data-index={idx}
-          data-point={anchor.point}
+          data-point={controller.point}
           style={`
           position: absolute;
           transform: translate(${-barLength / 2}px, ${-barLength / 2}px);
-          top: ${anchor.point}px;
+          top: ${controller.point}px;
           background: ${color};
           ${holding ? "" : "cursor: grab;"}
         `}
         >
           ↕
         </div>
-      {:else if anchor.type === "sized"}
+      {:else if controller.type === "sized"}
         <div
           data-target={internalId}
-          data-length="{anchor.length}px"
+          data-length="{controller.length}px"
           data-index={idx}
           style={`
           position: absolute;
-          top: ${anchor.point}px;
+          top: ${controller.point}px;
           left: ${-barLength / 2}px;
-          height: ${anchor.length}px;
+          height: ${controller.length}px;
           width: ${barLength}px;
           box-sizing: border-box;
           background: ${color};

@@ -191,7 +191,16 @@ export function recalcControllersRange(
 
     let start = c.point;
 
-    // if (c.type === "point") {
+    const nextVisible = controllers.find((cur, j) => {
+      return (
+        idx < j &&
+        // sized is always end
+        (cur.type === "sized" ||
+          // or next visible point
+          (cur.type === "point" && cur.visible))
+      );
+    });
+
     if (prev?.type === "point") {
       start = prev.point;
     }
@@ -201,19 +210,9 @@ export function recalcControllersRange(
 
     let end: number;
     if (c.type === "sized") {
-      const nextVisible = controllers.find((cur, j) => {
-        return (
-          idx < j &&
-          // sized is always end
-          (cur.type === "sized" ||
-            // or next visible point
-            (cur.type === "point" && cur.visible))
-        );
-      });
       end = (nextVisible?.point ?? maxSize) - c.length;
-      // end = nextOfNext?.point ?? c.point;
     } else {
-      end = next?.point ?? c.point;
+      end = nextVisible?.point ?? maxSize;
     }
     // let end = next?.point ?? c.point;
     return {
