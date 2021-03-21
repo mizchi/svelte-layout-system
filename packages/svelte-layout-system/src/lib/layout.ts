@@ -179,6 +179,50 @@ export function moveController(
   });
 }
 
+export function recalcControllersRange(
+  controllers: Array<PointController | SizedController>,
+  maxSize: number
+): Array<PointController | SizedController> {
+  // adjust prev / next size
+  return controllers.map((c, idx) => {
+    const prev = controllers[idx - 1];
+    const next = controllers[idx + 1];
+    // const nextOfNext = controllers[idx + 2];
+
+    let start = c.point;
+
+    // if (c.type === "point") {
+    if (prev?.type === "point") {
+      start = prev.point;
+    }
+    if (prev?.type === "sized") {
+      start = prev.point + prev.length;
+    }
+
+    let end: number;
+    if (c.type === "sized") {
+      const nextVisible = controllers.find((cur, j) => {
+        return (
+          idx < j &&
+          // sized is always end
+          (cur.type === "sized" ||
+            // or next visible point
+            (cur.type === "point" && cur.visible))
+        );
+      });
+      end = (nextVisible?.point ?? maxSize) - c.length;
+      // end = nextOfNext?.point ?? c.point;
+    } else {
+      end = next?.point ?? c.point;
+    }
+    // let end = next?.point ?? c.point;
+    return {
+      ...c,
+      range: [start, end],
+    };
+  });
+}
+
 export function makeControllers(
   rawValues: FlexChildren,
   maxSize: number
@@ -212,6 +256,7 @@ export function makeControllers(
         type: "point",
         point: progress,
         index: i,
+        range: [progress, progress],
         visible: !leftIsStatic && !isStartPoint && !isEndPoint,
       });
 
@@ -224,11 +269,13 @@ export function makeControllers(
         length: cur.size,
         fixed: isSizedFixed,
         index: i,
+        range: [progress, progress + cur.size],
       });
       progress += cur.size;
     }
   }
-  return controllers;
+  return recalcControllersRange(controllers, maxSize);
+  // return controllers;
 }
 
 export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
