@@ -2,7 +2,6 @@
   import type { FlexData, FlexChildren } from "./types";
   import Seekbar from "./Seekbar.svelte";
   import { createEventDispatcher } from "svelte";
-
   export let type: "horizontal" | "vertical" = "horizontal";
   export let flexData: FlexData;
   export let width: number;
@@ -17,26 +16,26 @@
   };
 </script>
 
-<div class="flex-edit-layer">
+<div class="editable-flex-overlay">
   {#if type === "horizontal"}
     <Seekbar
       type="horizontal"
       length={width}
-      values={flexData.children}
+      children={flexData.children}
       on:seekend={onSeekEnd}
     />
   {:else}
     <Seekbar
       type="vertical"
       length={height}
-      values={flexData.children}
+      children={flexData.children}
       on:seekend={onSeekEnd}
     />
   {/if}
 </div>
 
 <style>
-  .flex-edit-layer {
+  .editable-flex-overlay {
     position: relative;
   }
 </style>

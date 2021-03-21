@@ -1,33 +1,26 @@
 /* eslint-disable */
 /// <reference types="svelte" />
-import { SvelteComponentTyped } from "svelte";
+import type { SvelteComponentTyped } from "svelte";
 
 import type {
   PixelValue,
   FlexGrowValue,
   PercentValue,
   FlexChildren,
+  FlexProps,
 } from "./src/types";
 
 export * from "./src/types";
 
-export type FlexProps = {
-  direction?: "row" | "column";
-  width?: PixelValue | PercentValue | "auto";
-  height?: PixelValue | PercentValue | "auto";
-};
-
 export class Flex extends SvelteComponentTyped<
   FlexProps,
-  {
-    change: { children: FlexChildren };
-  },
+  {},
   { default: {} }
 > {}
 export class EditableFlex extends SvelteComponentTyped<
   FlexProps,
   {
-    change: { children: FlexChildren };
+    change: { target: HTMLElement; children: FlexChildren };
   },
   { default: {} }
 > {}
@@ -41,3 +34,4 @@ export class FlexItem extends SvelteComponentTyped<
 > {}
 
 export class Seekbar extends SvelteComponentTyped<{}, {}, { default: {} }> {}
+export class Editable extends SvelteComponentTyped<{}, {}, { default: {} }> {}

@@ -1,7 +1,12 @@
 <script lang="ts">
   import type { FlexChildren, FlexGrowValue, PixelValue } from "./types";
   import { createEventDispatcher } from "svelte";
-  import { makeControllers, moveController } from "./lib/layout";
+  import {
+    makeControllers,
+    moveController,
+    recalcControllersRange,
+  } from "./lib/layout";
+  import { minmax } from "./lib/utils";
 
   export let type: "horizontal" | "vertical" = "horizontal";
   export let length: number;
@@ -9,9 +14,9 @@
   const dispatch = createEventDispatcher<{
     seekend: Array<PixelValue | FlexGrowValue>;
   }>();
-  export let values: FlexChildren;
+  export let children: FlexChildren;
 
-  let anchors = makeControllers(values, length);
+  let controllers = makeControllers(children, length);
   let holding: {
     index: number;
     initialPageX: number;
@@ -20,26 +25,10 @@
   } | null = null;
 
   const internalId = Math.random().toString(32).substring(2);
-
-  const onMouseUpOnBar = (ev: any) => {
-    if (holding == null) return;
-
-    const delta =
-      type === "horizontal"
-        ? ev.pageX - holding.initialPageX
-        : ev.pageY - holding.initialPageY;
-
-    const moved = moveController(values, length, holding.index, delta);
-    values = moved;
-    dispatch("seekend", moved);
-    holding = null;
-    window.document.body.style.cursor = "auto";
-  };
-
   const onMouseDownOnBar = (ev: any) => {
     const { index, target } = ev.target.dataset ?? {};
     if (target == internalId && index) {
-      const anchor = anchors[index]!;
+      const anchor = controllers[index]!;
       if (anchor.type === "sized" && anchor.fixed) {
         return;
       }
@@ -55,21 +44,45 @@
 
   const onMouseMoveOnBar = (ev: any) => {
     if (holding == null) return;
-    const currentAnchor = anchors[holding.index]!;
+    const current = controllers[holding.index]!;
     const delta =
       type === "horizontal"
         ? ev.pageX - holding.initialPageX
         : ev.pageY - holding.initialPageY;
 
-    const nx = holding.firstValue + delta;
-    const newAnchors = anchors.slice();
-    if (currentAnchor!.type === "point") {
-      newAnchors[holding!.index]!.point = nx;
-    } else if (currentAnchor.type === "sized") {
-      newAnchors[holding!.index]!.point = nx;
-    }
-    anchors = newAnchors;
+    const next = holding.firstValue + delta;
+    const [start, end] = current.range;
+    const nextInRange = minmax(start, next, end);
+    // let nextInRange = next < start ? start : next;
+
+    const newController = controllers.slice();
+    newController[holding!.index]!.point = nextInRange;
+    controllers = newController;
   };
+
+  const onMouseUpOnBar = (ev: any) => {
+    if (holding == null) return;
+
+    const delta =
+      type === "horizontal"
+        ? ev.pageX - holding.initialPageX
+        : ev.pageY - holding.initialPageY;
+
+    const next = holding.firstValue + delta;
+    const currentAnchor = controllers[holding.index]!;
+    const [start, end] = currentAnchor.range;
+    const nextInRange = minmax(start, next, end);
+    const fixedDelta = nextInRange - holding.firstValue;
+
+    const moved = moveController(children, length, holding.index, fixedDelta);
+    children = moved;
+    dispatch("seekend", moved);
+
+    controllers = recalcControllersRange(controllers);
+    holding = null;
+    window.document.body.style.cursor = "auto";
+  };
+
   const color = `rgb(${~~(Math.random() * 128)}, ${~~(
     Math.random() * 128
   )}, ${~~(Math.random() * 128)})`;
@@ -100,31 +113,34 @@
     `}
     />
 
-    {#each anchors as anchor, idx}
-      {#if anchor.type === "point" && anchor.visible}
+    {#each controllers as controller, idx}
+      {#if controller.type === "point" && controller.visible}
         <div
-          class="point-anchor"
+          class="point-controller"
           data-target={internalId}
           data-index={idx}
-          data-point={anchor.point}
+          data-point={controller.point}
           style={`
             position: absolute;
-            left: ${anchor.point}px;
+            z-index: 2;
+            left: ${controller.point}px;
             background: ${color};
             user-select: none;
+            border: 1px solid white;
+            border-radius: 50%;
             transform: translate(${-barLength / 2}px, ${-barLength / 2}px);
             ${holding ? "" : "cursor: grab;"}
           `}
         />
-      {:else if anchor.type === "sized"}
+      {:else if controller.type === "sized"}
         <div
           data-target={internalId}
           data-index={idx}
           style={`
             position: absolute;
-            left: ${anchor.point}px;
+            left: ${controller.point}px;
             top: ${-barLength / 2}px;
-            width: ${anchor.length}px;
+            width: ${controller.length}px;
             height: ${barLength}px;
             box-sizing: border-box;
             background: ${color};
@@ -134,10 +150,11 @@
             font-size: 4px;
             user-select: none;
             color: white;
+            z-index: 1;
             ${holding ? "" : "cursor: grab;"}
           `}
         >
-          {anchor.fixed ? "" : "↔"}
+          {controller.fixed ? "" : "↔"}
         </div>
       {/if}
     {/each}
@@ -156,7 +173,7 @@
   `}
     />
 
-    {#each anchors as anchor, idx}
+    {#each controllers as anchor, idx}
       {#if anchor.type === "point" && anchor.visible}
         <div
           class="point-anchor"
@@ -205,7 +222,7 @@
     --barLength: 18px;
   }
 
-  .point-anchor {
+  .point-controller {
     display: grid;
     justify-content: center;
     align-items: center;
