@@ -1,37 +1,25 @@
 <script lang="ts">
-  import type { FlexData, FlexChildren } from "./types";
+  import type { FlexData, FlexChildren, FlexChange } from "./types";
   import Seekbar from "./Seekbar.svelte";
-  import { onDestroy, createEventDispatcher } from "svelte";
-  import { getFlexValuesFromChildren } from "./lib/layout";
-
+  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import { getFlexDataFromElement } from "./lib/layout";
   export let target: HTMLElement;
+  let rect: null | { width: number; height: number } = null;
+  let flexData: FlexData;
 
+  // run once if target is ready
   let started = false;
-  let editData: null | { width: number; height: number; data: FlexData } = null;
   let unobserve: any = null;
-
-  onDestroy(() => {
-    unobserve?.();
-  });
-
-  $: if (!started && target) {
+  onDestroy(() => unobserve?.());
+  $: if (target != null && !started) {
     started = true;
-    const flexData = getFlexValuesFromChildren(target);
-    console.log("caculated", flexData);
-    const rect = target.getBoundingClientRect();
-    editData = {
-      data: flexData,
-      height: rect.height,
-      width: rect.width,
-    };
-    // debugger;
-
-    // observe
+    rect = target.getBoundingClientRect();
+    flexData = getFlexDataFromElement(target);
     const observer = new ResizeObserver((entries: any) => {
       for (const entry of entries) {
-        if (entry.target === target && editData) {
-          editData = {
-            ...editData,
+        if (entry.target === target) {
+          flexData = getFlexDataFromElement(target);
+          rect = {
             width: entry.contentRect.width,
             height: entry.contentRect.height,
           };
@@ -39,38 +27,36 @@
       }
     });
     observer.observe(target);
-    unobserve = () => observer.unobserve(target!);
+    unobserve = observer.unobserve(target);
   }
-
-  const dispatch = createEventDispatcher<{
-    change: FlexChildren;
-  }>();
-
+  // events
+  const dispatch = createEventDispatcher<{ change: FlexChange }>();
   const onSeekEnd = (ev: CustomEvent<FlexChildren>) => {
-    dispatch("change", ev.detail);
+    dispatch("change", {
+      target,
+      children: ev.detail,
+    });
   };
 </script>
 
-{#if editData}
+{#if flexData && rect}
   <div class="editable-flex-overlay">
-    {#if editData.data.direction === "row"}
+    {#if flexData.direction === "row"}
       <Seekbar
         type="horizontal"
-        length={editData.height}
-        children={editData.data.children}
+        length={rect.width}
+        children={flexData.children}
         on:seekend={onSeekEnd}
       />
     {:else}
       <Seekbar
         type="vertical"
-        length={editData.height}
-        children={editData.data.children}
+        length={rect.height}
+        children={flexData.children}
         on:seekend={onSeekEnd}
       />
     {/if}
   </div>
-{:else}
-  ...
 {/if}
 
 <style>

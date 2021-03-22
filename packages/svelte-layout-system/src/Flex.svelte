@@ -13,7 +13,6 @@
   export let height: `${number}px` | `${number}%` = "100%" as const;
   setContext<FlexContextData>(FlexContextKey, {
     direction,
-    editable: false,
   });
 </script>
 

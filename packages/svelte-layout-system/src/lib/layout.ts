@@ -277,7 +277,7 @@ export function makeControllers(
   // return controllers;
 }
 
-export function getFlexValuesFromChildren(target: HTMLElement): FlexData {
+export function getFlexDataFromElement(target: HTMLElement): FlexData {
   const style = getComputedStyle(target);
   const flexDirection = style.flexDirection;
   const flexes: Array<PixelValue | FlexGrowValue> = [];

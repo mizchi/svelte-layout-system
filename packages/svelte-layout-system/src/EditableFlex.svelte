@@ -8,31 +8,27 @@
 </script>
 
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { isEditable } from "./Editable.svelte";
   import EditableFlexOverlay from "./EditableFlexOverlay.svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+  import { isEditable } from "./Editable.svelte";
 
-  // props
   export let direction: "column" | "row" = "row";
   export let width: `${number}px` | `${number}%` = "100%" as const;
   export let height: `${number}px` | `${number}%` = "100%" as const;
   export let id: string | null = null;
-  // events
-  const dispatch = createEventDispatcher<{ change: FlexChange }>();
 
   setContext<FlexContextData>(ContextKey, {
     direction,
   });
 
   let flexElement: HTMLElement;
-
-  const onChangeFlex = (ev: CustomEvent<FlexChildren>) => {
-    dispatch("change", {
-      target: flexElement,
-      children: ev.detail,
-    });
-  };
 </script>
+
+{#if isEditable()}
+  <div class="flex-editable-overlay">
+    <EditableFlexOverlay target={flexElement} on:change />
+  </div>
+{/if}
 
 <div
   bind:this={flexElement}
@@ -40,11 +36,6 @@
   style="width:{width};height:{height};flex-direction:{direction};user-select: none;"
   data-editable-id={id}
 >
-  {#if isEditable()}
-    <div class="flex-editable-overlay">
-      <EditableFlexOverlay target={flexElement} on:change={onChangeFlex} />
-    </div>
-  {/if}
   <slot />
 </div>
 

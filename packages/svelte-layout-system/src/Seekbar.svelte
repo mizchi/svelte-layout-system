@@ -12,6 +12,7 @@
 
   export let type: "horizontal" | "vertical" = "horizontal";
   export let length: number;
+  export let emitType: "end" | "move" = "end";
 
   const dispatch = createEventDispatcher<{
     seekend: Array<PixelValue | FlexGrowValue>;
