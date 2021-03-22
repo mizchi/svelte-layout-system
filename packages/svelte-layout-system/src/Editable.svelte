@@ -7,7 +7,8 @@
 </script>
 
 <script lang="ts">
-  setContext(MARKER, true);
+  export let editable: boolean = true;
+  setContext(MARKER, editable);
 </script>
 
 <slot />

@@ -1,3 +1,5 @@
+<svelte:options tag="editable-seekbar" />
+
 <script lang="ts">
   import type { FlexChildren, FlexGrowValue, PixelValue } from "./types";
   import { createEventDispatcher } from "svelte";

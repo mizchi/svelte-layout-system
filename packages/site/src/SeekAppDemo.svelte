@@ -51,7 +51,7 @@
   // $: Flex = RawFlex;
 </script>
 
-<Editable>
+<Editable editable>
   <div class="h-full w-full">
     <div class="p-4">
       {#if $editMode === "preview"}
@@ -78,6 +78,7 @@
         width="800px"
         height="400px"
         direction="column"
+        id="root"
         on:change={onChangeFlex1}
       >
         <FlexItem length={flexChildren1[0]}>

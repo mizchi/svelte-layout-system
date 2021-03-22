@@ -34,4 +34,8 @@ export class FlexItem extends SvelteComponentTyped<
 > {}
 
 export class Seekbar extends SvelteComponentTyped<{}, {}, { default: {} }> {}
-export class Editable extends SvelteComponentTyped<{}, {}, { default: {} }> {}
+export class Editable extends SvelteComponentTyped<
+  { editable?: boolean },
+  {},
+  { default: {} }
+> {}

@@ -8,89 +8,44 @@
 </script>
 
 <script lang="ts">
-  import type { FlexData } from "./types";
-  import EditableFlexOverlay from "./EditableFlexOverlay.svelte";
-  import { onDestroy, createEventDispatcher } from "svelte";
-  import { getFlexValuesFromChildren } from "./lib/layout";
+  import { createEventDispatcher } from "svelte";
   import { isEditable } from "./Editable.svelte";
+  import EditableFlexOverlay from "./EditableFlexOverlay.svelte";
 
+  // props
   export let direction: "column" | "row" = "row";
   export let width: `${number}px` | `${number}%` = "100%" as const;
   export let height: `${number}px` | `${number}%` = "100%" as const;
   export let id: string | null = null;
+  // events
+  const dispatch = createEventDispatcher<{ change: FlexChange }>();
 
   setContext<FlexContextData>(ContextKey, {
     direction,
-    editable: true,
   });
 
-  let flexRoot: HTMLElement;
-
-  let editData: null | { width: number; height: number; data: FlexData } = null;
-
-  let unobserve: any = null;
-
-  const dispatch = createEventDispatcher<{ change: FlexChange }>();
-
-  onDestroy(() => {
-    unobserve?.();
-  });
-
-  let started = false;
-  $: if (isEditable() && !started && flexRoot) {
-    started = true;
-    const observer = new ResizeObserver((entries: any) => {
-      for (const entry of entries) {
-        if (entry.target === flexRoot && editData) {
-          editData = {
-            ...editData,
-            width: entry.contentRect.width,
-            height: entry.contentRect.height,
-          };
-        }
-      }
-    });
-    const flexData = getFlexValuesFromChildren(flexRoot);
-    const rect = flexRoot.getBoundingClientRect();
-    editData = {
-      data: flexData,
-      height: rect.height,
-      width: rect.width,
-    };
-    observer.observe(flexRoot);
-    unobserve = () => observer.unobserve(flexRoot!);
-  }
-  $: editorType =
-    direction === "row" ? ("horizontal" as const) : ("vertical" as const);
+  let flexElement: HTMLElement;
 
   const onChangeFlex = (ev: CustomEvent<FlexChildren>) => {
     dispatch("change", {
-      target: flexRoot,
+      target: flexElement,
       children: ev.detail,
     });
   };
 </script>
 
 <div
-  bind:this={flexRoot}
+  bind:this={flexElement}
   class="flex"
   style="width:{width};height:{height};flex-direction:{direction};user-select: none;"
   data-editable-id={id}
 >
-  {#if isEditable() && editData}
+  {#if isEditable()}
     <div class="flex-editable-overlay">
-      <EditableFlexOverlay
-        type={editorType}
-        width={editData.width}
-        height={editData.height}
-        flexData={editData.data}
-        on:change={onChangeFlex}
-      />
+      <EditableFlexOverlay target={flexElement} on:change={onChangeFlex} />
     </div>
-    <slot />
-  {:else}
-    <slot />
   {/if}
+  <slot />
 </div>
 
 <style>

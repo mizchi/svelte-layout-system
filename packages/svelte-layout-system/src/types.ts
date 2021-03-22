@@ -61,5 +61,4 @@ export type SizedController = {
 
 export type FlexContextData = {
   direction: "row" | "column";
-  editable: boolean;
 };
