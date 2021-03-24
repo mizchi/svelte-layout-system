@@ -139,10 +139,10 @@ export function moveController(
 ): FlexChildren {
   const values = children.map(toInternalValue);
   const realValues = calcRealSizes(values, maxSize);
-  const currentController = values[index] as InternalValue;
+  const currentValue = values[index] as InternalValue;
 
   let shifted: number[];
-  if (currentController.type === "static") {
+  if (currentValue.type === "static") {
     shifted = values.map((_v, idx) => {
       const real = realValues[idx]!;
       if (idx + 1 === index) {
@@ -185,13 +185,24 @@ export function recalcControllersRange(
 ): Array<PointController | SizedController> {
   // adjust prev / next size
   return controllers.map((c, idx) => {
-    const prev = controllers[idx - 1];
-    const next = controllers[idx + 1];
-    // const nextOfNext = controllers[idx + 2];
-
     let start = c.point;
-
-    const nextVisible = controllers.find((cur, j) => {
+    const prev = controllers[idx - 1];
+    // let next: any;
+    // for (let j = 0; j < controllers.length; j++) {
+    //   const cur = controllers[j]!;
+    //   if (
+    //     next == null &&
+    //     idx < j &&
+    //     // sized is always end
+    //     (cur.type === "sized" ||
+    //       // or next visible point
+    //       (cur.type === "point" && cur.visible))
+    //   ) {
+    //     next = cur;
+    //     break
+    //   }
+    // }
+    const next = controllers.find((cur, j) => {
       return (
         idx < j &&
         // sized is always end
@@ -210,9 +221,9 @@ export function recalcControllersRange(
 
     let end: number;
     if (c.type === "sized") {
-      end = (nextVisible?.point ?? maxSize) - c.length;
+      end = (next?.point ?? maxSize) - c.length;
     } else {
-      end = nextVisible?.point ?? maxSize;
+      end = next?.point ?? maxSize;
     }
     // let end = next?.point ?? c.point;
     return {

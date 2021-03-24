@@ -1,3 +1,5 @@
+import "carbon-components-svelte/css/all.css";
+
 // @ts-ignore
 import App from "../App.svelte";
 

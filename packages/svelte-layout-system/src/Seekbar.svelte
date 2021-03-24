@@ -1,5 +1,3 @@
-<svelte:options tag="editable-seekbar" />
-
 <script lang="ts">
   import type { FlexChildren, FlexGrowValue, PixelValue } from "./types";
   import { createEventDispatcher } from "svelte";
@@ -12,9 +10,9 @@
 
   export let type: "horizontal" | "vertical" = "horizontal";
   export let length: number;
-  export let emitType: "end" | "move" = "end";
 
   const dispatch = createEventDispatcher<{
+    move: Array<PixelValue | FlexGrowValue>;
     seekend: Array<PixelValue | FlexGrowValue>;
   }>();
   export let children: FlexChildren;
@@ -31,15 +29,15 @@
   const onMouseDownOnBar = (ev: any) => {
     const { index, target } = ev.target.dataset ?? {};
     if (target == internalId && index) {
-      const anchor = controllers[index]!;
-      if (anchor.type === "sized" && anchor.fixed) {
+      const controller = controllers[index]!;
+      if (controller.type === "sized" && controller.fixed) {
         return;
       }
       holding = {
         initialPageX: ev.pageX as number,
         initialPageY: ev.pageY as number,
         index: Number(index),
-        firstValue: anchor.point,
+        firstValue: controller.point,
       };
       window.document.body.style.cursor = "grabbing";
     }
@@ -56,11 +54,14 @@
     const next = holding.firstValue + delta;
     const [start, end] = current.range;
     const nextInRange = minmax(start, next, end);
-    // let nextInRange = next < start ? start : next;
 
     const newController = controllers.slice();
     newController[holding!.index]!.point = nextInRange;
-    controllers = newController;
+    controllers = recalcControllersRange(newController, length);
+
+    const fixedDelta = nextInRange - holding.firstValue;
+    const moved = moveController(children, length, holding.index, fixedDelta);
+    dispatch("move", moved);
   };
 
   const onMouseUpOnBar = (ev: any) => {
@@ -79,6 +80,7 @@
 
     const moved = moveController(children, length, holding.index, fixedDelta);
     children = moved;
+
     dispatch("seekend", moved);
 
     controllers = recalcControllersRange(controllers, length);

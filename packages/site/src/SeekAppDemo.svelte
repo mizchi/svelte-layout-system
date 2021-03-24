@@ -51,7 +51,7 @@
   // $: Flex = RawFlex;
 </script>
 
-<Editable editable>
+<Editable editable={false}>
   <div class="h-full w-full">
     <div class="p-4">
       {#if $editMode === "preview"}

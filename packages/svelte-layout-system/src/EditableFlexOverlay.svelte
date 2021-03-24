@@ -31,7 +31,7 @@
   }
   // events
   const dispatch = createEventDispatcher<{ change: FlexChange }>();
-  const onSeekEnd = (ev: CustomEvent<FlexChildren>) => {
+  const onChange = (ev: CustomEvent<FlexChildren>) => {
     dispatch("change", {
       target,
       children: ev.detail,
@@ -46,14 +46,16 @@
         type="horizontal"
         length={rect.width}
         children={flexData.children}
-        on:seekend={onSeekEnd}
+        on:seekend={onChange}
+        on:move={onChange}
       />
     {:else}
       <Seekbar
         type="vertical"
         length={rect.height}
         children={flexData.children}
-        on:seekend={onSeekEnd}
+        on:seekend={onChange}
+        on:move={onChange}
       />
     {/if}
   </div>
