@@ -9,7 +9,6 @@
 
 <script lang="ts">
   import EditableFlexOverlay from "./EditableFlexOverlay.svelte";
-  import { createEventDispatcher, onMount } from "svelte";
   import { isEditable } from "./Editable.svelte";
 
   export let direction: "column" | "row" = "row";
@@ -26,7 +25,7 @@
 
 {#if isEditable()}
   <div class="flex-editable-overlay">
-    <EditableFlexOverlay target={flexElement} on:change />
+    <EditableFlexOverlay target={flexElement} on:change on:seekend />
   </div>
 {/if}
 

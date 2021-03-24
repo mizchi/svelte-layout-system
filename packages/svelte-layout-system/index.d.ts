@@ -8,6 +8,7 @@ import type {
   PercentValue,
   FlexChildren,
   FlexProps,
+  FlexChange,
 } from "./src/types";
 
 export * from "./src/types";
@@ -17,11 +18,21 @@ export class Flex extends SvelteComponentTyped<
   {},
   { default: {} }
 > {}
+
 export class EditableFlex extends SvelteComponentTyped<
   FlexProps,
   {
-    change: { target: HTMLElement; children: FlexChildren };
+    change: FlexChange;
+    seekend: FlexChange;
   },
+  { default: {} }
+> {}
+
+export class EditableFlexItem extends SvelteComponentTyped<
+  {
+    length: PixelValue | FlexGrowValue;
+  },
+  {},
   { default: {} }
 > {}
 

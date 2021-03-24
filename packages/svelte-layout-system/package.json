@@ -3,6 +3,7 @@
   "version": "0.1.5",
   "license": "MIT",
   "scripts": {
+    "prepublishOnly": "yarn build",
     "test": "run-p test:*",
     "test:unittest": "jest",
     "test:eslint": "eslint . --ext .ts,.svelte",

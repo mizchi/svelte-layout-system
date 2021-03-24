@@ -30,9 +30,18 @@
     unobserve = observer.unobserve(target);
   }
   // events
-  const dispatch = createEventDispatcher<{ change: FlexChange }>();
+  const dispatch = createEventDispatcher<{
+    change: FlexChange;
+    seekend: FlexChange;
+  }>();
   const onChange = (ev: CustomEvent<FlexChildren>) => {
     dispatch("change", {
+      target,
+      children: ev.detail,
+    });
+  };
+  const onSeekend = (ev: CustomEvent<FlexChildren>) => {
+    dispatch("seekend", {
       target,
       children: ev.detail,
     });
@@ -46,7 +55,7 @@
         type="horizontal"
         length={rect.width}
         children={flexData.children}
-        on:seekend={onChange}
+        on:seekend={onSeekend}
         on:move={onChange}
       />
     {:else}
@@ -54,7 +63,7 @@
         type="vertical"
         length={rect.height}
         children={flexData.children}
-        on:seekend={onChange}
+        on:seekend={onSeekend}
         on:move={onChange}
       />
     {/if}
