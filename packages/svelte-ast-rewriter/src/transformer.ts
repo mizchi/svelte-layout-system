@@ -1,15 +1,24 @@
+import {
+  updateAttirbute,
+  UpdateAttributeCommand,
+} from "./rewriter/updateAttribute";
+import { insertChild, InsertChildCommand } from "./rewriter/insertChild";
 import type { ParsedSvelteAst } from "./types";
 import type {
   AttributeNode,
   ElementNode,
   InlineComponentNode,
+  MustacheTagNode,
   Node,
+  TextNode,
 } from "./nodes";
 import type { RewriteFlexItemLengthCommand } from "./rewriter/rewriteFlexItemLength";
+import * as b from "./builder";
 
 import produce from "immer";
 import { walk as walkEstree } from "estree-walker";
 import { rewriteFlexItemLength } from "./rewriter/rewriteFlexItemLength";
+import { deleteNode, DeleteNodeCommand } from "./rewriter/deleteNode";
 
 export function hasAttr(
   node: InlineComponentNode | ElementNode,
@@ -31,6 +40,19 @@ export function getAttr(
   return node.attributes.find((x) => x.name === key);
 }
 
+export function setAttr(
+  node: InlineComponentNode | ElementNode,
+  key: string,
+  value: Array<TextNode | MustacheTagNode>
+): AttributeNode | void {
+  const idx = node.attributes.findIndex((x) => x.name === key);
+  if (idx > -1) {
+    node.attributes[idx].value = value;
+  } else {
+    node.attributes.push(b.attribute(key, value));
+  }
+}
+
 export function getAttrText(
   node: InlineComponentNode | ElementNode,
   key: string
@@ -47,7 +69,36 @@ type VoidCommand = {
   type: "void";
 };
 
-export type RewriteCommand = VoidCommand | RewriteFlexItemLengthCommand;
+export type RewriteCommand =
+  | VoidCommand
+  | RewriteFlexItemLengthCommand
+  | InsertChildCommand
+  | DeleteNodeCommand
+  | UpdateAttributeCommand;
+
+export function transform(parsed: ParsedSvelteAst, cmd: RewriteCommand) {
+  return produce(parsed, (newParsed) => {
+    const fragment = newParsed.template.html as Node;
+    switch (cmd.type) {
+      case "flex-children": {
+        visit(fragment, (...args) => rewriteFlexItemLength(cmd, ...args));
+        break;
+      }
+      case "insert-child": {
+        visit(fragment, (...args) => insertChild(cmd, ...args));
+        break;
+      }
+      case "update-attribute": {
+        visit(fragment, (...args) => updateAttirbute(cmd, ...args));
+        break;
+      }
+      case "delete-node": {
+        visit(fragment, (...args) => deleteNode(cmd, ...args));
+        break;
+      }
+    }
+  });
+}
 
 function visit(
   node: Node,
@@ -57,17 +108,5 @@ function visit(
     enter(next, parent, prop, index) {
       visitor(next as Node, parent as Node | undefined, prop, index);
     },
-  });
-}
-
-export function transform(parsed: ParsedSvelteAst, cmd: RewriteCommand) {
-  return produce(parsed, (newParsed) => {
-    switch (cmd.type) {
-      case "flex-children": {
-        visit(newParsed.template.html as Node, (...args) =>
-          rewriteFlexItemLength(cmd, ...args)
-        );
-      }
-    }
   });
 }

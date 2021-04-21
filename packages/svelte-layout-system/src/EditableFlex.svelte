@@ -14,7 +14,7 @@
   export let direction: "column" | "row" = "row";
   export let width: `${number}px` | `${number}%` = "100%" as const;
   export let height: `${number}px` | `${number}%` = "100%" as const;
-  export let id: string | null = null;
+  export let id: string | undefined = undefined;
 
   setContext<FlexContextData>(ContextKey, {
     direction,
@@ -33,7 +33,7 @@
   bind:this={flexElement}
   class="flex"
   style="width:{width};height:{height};flex-direction:{direction};user-select: none;"
-  data-editable-id={id}
+  {id}
 >
   <slot />
 </div>

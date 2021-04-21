@@ -1,6 +1,6 @@
 export interface BaseNode {
-  start: number;
-  end: number;
+  start?: number;
+  end?: number;
   isJS?: boolean;
   forceSingleQuote?: boolean;
   forceSingleLine?: boolean;
@@ -140,7 +140,7 @@ export interface InlineComponentNode<ComponentType extends string = any>
   name: ComponentType;
   attributes: AttributeNode[];
   children: Node[];
-  expression: Node;
+  // expression: Node;
 }
 
 export interface CommentNode extends BaseNode {

@@ -1,5 +1,5 @@
 {
-  "name": "draggable",
+  "name": "@mizchi/svelte-draggable-editor",
   "private": true,
   "version": "0.1.6",
   "scripts": {
