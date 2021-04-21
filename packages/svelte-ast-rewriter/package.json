@@ -1,6 +1,6 @@
 {
   "name": "svelte-ast-rewriter",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
@@ -23,6 +23,6 @@
     "immer": "^8.0.1",
     "jest": "^26.6.3",
     "klona": "^2.0.4",
-    "svelte-layout-system": "^0.1.6"
+    "svelte-layout-system": "^0.1.7"
   }
 }
