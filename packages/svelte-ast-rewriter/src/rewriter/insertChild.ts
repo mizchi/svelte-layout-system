@@ -3,7 +3,7 @@ import { hasAttr } from "../transformer";
 
 export type InsertChildCommand = {
   type: "insert-child";
-  nodeId: string;
+  id: string;
   newNode: Node;
 };
 
@@ -14,7 +14,7 @@ export function insertChild(
   _prop?: string,
   _index?: number
 ) {
-  if (isTarget(node, cmd.nodeId)) {
+  if (isTarget(node, cmd.id)) {
     node.children.push(cmd.newNode);
   }
 }

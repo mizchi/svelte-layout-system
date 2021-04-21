@@ -9,7 +9,7 @@ import type {
 
 export type InsertChildCommand = {
   type: "insert-child";
-  nodeId: string;
+  id: string;
   child: Node;
 };
 

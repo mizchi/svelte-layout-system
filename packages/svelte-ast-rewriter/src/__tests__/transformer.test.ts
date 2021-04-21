@@ -40,7 +40,7 @@ it("transform nested flex item length", () => {
   const rewrote = transform(parsed, {
     type: "flex-children",
     children: ["3", "2"],
-    nodeId: "root",
+    id: "root",
   });
 
   const transformed = renderSvelteTemplate(rewrote);
@@ -64,7 +64,7 @@ it("transform flex item length", () => {
   const rewrote = transform(parsed, {
     type: "flex-children",
     children: ["3", "2"],
-    nodeId: "nested",
+    id: "nested",
   });
   const transformed = renderSvelteTemplate(rewrote);
   expect(transformed).toBe(expected2);
@@ -82,7 +82,7 @@ it("transform nested flex item length", () => {
   const rewrote = transform(parsed, {
     type: "flex-children",
     children: ["3", "2"],
-    nodeId: "root",
+    id: "root",
   });
 
   const transformed = renderSvelteTemplate(rewrote);
@@ -99,7 +99,7 @@ it("transform insertChild", () => {
   const parsed = parseSvelteTemplate(code);
   const rewrote = transform(parsed, {
     type: "insert-child",
-    nodeId: "x",
+    id: "x",
     newNode: b.inlineComponent("Hoge"),
   });
   const transformed = renderSvelteTemplate(rewrote);
@@ -124,7 +124,7 @@ it("transform insertChild with attributes", () => {
   // const rewrote = transform(code, )
   const rewrote = transform(parsed, {
     type: "insert-child",
-    nodeId: "x",
+    id: "x",
     newNode: b.inlineComponent("Hoge", [b.attribute("foo", [b.text("bar")])]),
   });
   const transformed = renderSvelteTemplate(rewrote);
@@ -145,7 +145,7 @@ it("transform updateAttribute", () => {
   // const rewrote = transform(code, )
   const rewrote = transform(parsed, {
     type: "update-attribute",
-    nodeId: "root",
+    id: "root",
     attributeName: "v",
     value: [b.text("2")],
   });
@@ -164,7 +164,7 @@ it("transform updateAttribute with create", () => {
   const parsed = parseSvelteTemplate(code);
   const rewrote = transform(parsed, {
     type: "update-attribute",
-    nodeId: "root",
+    id: "root",
     attributeName: "v",
     value: [b.text("99")],
   });
@@ -188,10 +188,9 @@ it("transform deleteNode", () => {
   // const rewrote = transform(code, )
   const rewrote = transform(parsed, {
     type: "delete-node",
-    nodeId: "b",
+    id: "b",
   });
   const transformed = renderSvelteTemplate(rewrote);
-  console.log(transformed);
   expect(transformed).toBe(`<script></script>
 
 <Flex id="root"><FlexItem id="a" xxx="1" /></Flex>

@@ -1,8 +1,9 @@
-import {
-  updateAttirbute,
-  UpdateAttributeCommand,
-} from "./rewriter/updateAttribute";
-import { insertChild, InsertChildCommand } from "./rewriter/insertChild";
+import type { UpdateAttributeCommand } from "./rewriter/updateAttribute";
+import type { InsertChildCommand } from "./rewriter/insertChild";
+import type { DeleteNodeCommand } from "./rewriter/deleteNode";
+
+import { updateAttirbute } from "./rewriter/updateAttribute";
+import { insertChild } from "./rewriter/insertChild";
 import type { ParsedSvelteAst } from "./types";
 import type {
   AttributeNode,
@@ -18,7 +19,7 @@ import * as b from "./builder";
 import produce from "immer";
 import { walk as walkEstree } from "estree-walker";
 import { rewriteFlexItemLength } from "./rewriter/rewriteFlexItemLength";
-import { deleteNode, DeleteNodeCommand } from "./rewriter/deleteNode";
+import { deleteNode } from "./rewriter/deleteNode";
 
 export function hasAttr(
   node: InlineComponentNode | ElementNode,

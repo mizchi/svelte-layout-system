@@ -3,7 +3,7 @@ import { hasAttr } from "../transformer";
 
 export type DeleteNodeCommand = {
   type: "delete-node";
-  nodeId: string;
+  id: string;
 };
 
 export function deleteNode(
@@ -13,16 +13,12 @@ export function deleteNode(
   _prop?: string,
   _index?: number
 ) {
-  if (
-    isTarget(node, cmd.nodeId) &&
-    parent &&
-    parent.type === "InlineComponent"
-  ) {
+  if (isTarget(node, cmd.id) && parent && parent.type === "InlineComponent") {
     // const index = parent.children.findIndex((n) => node);
     parent.children = parent.children.filter((n) => {
       return (
         (n.type === "InlineComponent" || n.type === "Element") &&
-        !hasAttr(n, "id", cmd.nodeId)
+        !hasAttr(n, "id", cmd.id)
       );
     });
   }

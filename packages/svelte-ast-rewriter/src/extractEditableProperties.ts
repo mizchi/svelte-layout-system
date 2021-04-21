@@ -11,7 +11,7 @@ type ScriptEditableProperty = {
 export function extractEditableProperties(
   source: ts.SourceFile
 ): Array<ScriptEditableProperty> {
-  let properties: Array<ScriptEditableProperty> = [];
+  const properties: Array<ScriptEditableProperty> = [];
   for (const stmt of source.statements) {
     if (ts.isVariableStatement(stmt)) {
       const hasExportModifier = stmt.modifiers?.some((mod) => {

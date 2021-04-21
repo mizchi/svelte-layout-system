@@ -4,7 +4,7 @@ import { hasAttr, getAttr } from "../transformer";
 
 export type RewriteFlexItemLengthCommand = {
   type: "flex-children";
-  nodeId: string;
+  id: string;
   children: FlexChildren;
 };
 
@@ -15,7 +15,7 @@ export function rewriteFlexItemLength(
   _prop?: string,
   _index?: number
 ) {
-  if (isFlexParent(parent as any, cmd.nodeId) && isFlexItem(node as any)) {
+  if (isFlexParent(parent as any, cmd.id) && isFlexItem(node as any)) {
     const parentFlex = parent as InlineComponentNode;
     const flexItem = node as InlineComponentNode;
     const lengthAttr = getAttr(flexItem, "length");

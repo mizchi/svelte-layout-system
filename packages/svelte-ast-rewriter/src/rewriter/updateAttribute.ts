@@ -10,7 +10,7 @@ import { hasAttr, setAttr } from "../transformer";
 
 export type UpdateAttributeCommand = {
   type: "update-attribute";
-  nodeId: string;
+  id: string;
   attributeName: string;
   value: Array<TextNode | MustacheTagNode>;
 };
@@ -22,7 +22,7 @@ export function updateAttirbute(
   _prop?: string,
   _index?: number
 ) {
-  if (isTarget(node, cmd.nodeId)) {
+  if (isTarget(node, cmd.id)) {
     setAttr(node, cmd.attributeName, cmd.value);
   }
 }
