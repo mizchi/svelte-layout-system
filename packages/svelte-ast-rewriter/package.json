@@ -1,6 +1,6 @@
 {
   "name": "svelte-ast-rewriter",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
