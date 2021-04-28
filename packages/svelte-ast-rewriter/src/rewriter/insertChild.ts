@@ -1,11 +1,6 @@
+import type { InsertChildCommand } from "../command_types";
 import type { InlineComponentNode, Node, ElementNode } from "../nodes";
 import { hasAttr } from "../transformer";
-
-export type InsertChildCommand = {
-  type: "insert-child";
-  id: string;
-  newNode: Node;
-};
 
 export function insertChild(
   cmd: InsertChildCommand,

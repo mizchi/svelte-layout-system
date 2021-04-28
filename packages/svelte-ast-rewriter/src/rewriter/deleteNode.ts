@@ -1,10 +1,6 @@
+import type { DeleteNodeCommand } from "../command_types";
 import type { InlineComponentNode, Node, ElementNode } from "../nodes";
 import { hasAttr } from "../transformer";
-
-export type DeleteNodeCommand = {
-  type: "delete-node";
-  id: string;
-};
 
 export function deleteNode(
   cmd: DeleteNodeCommand,

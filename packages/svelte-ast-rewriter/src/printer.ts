@@ -7,7 +7,7 @@ import type { Ast } from "svelte/types/compiler/interfaces";
 
 // @ts-ignore
 import * as sveltePrinter from "@mizchi/svelte-printer";
-import type { ParsedSvelteAst } from "./types";
+import type { ParsedSvelteAst } from "./node_types";
 
 export function printTemplate(ast: Ast): string {
   const code = sveltePrinter.printCode(ast);
@@ -17,7 +17,7 @@ export function printTemplate(ast: Ast): string {
   });
 }
 
-export function renderSvelteTemplate(parsed: ParsedSvelteAst): string {
+export function print(parsed: ParsedSvelteAst): string {
   const printer = ts.createPrinter();
   const printedScript = printer.printFile(parsed.script);
   const css = compileCss(parsed.style);

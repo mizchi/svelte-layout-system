@@ -12,6 +12,7 @@
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",
     "@types/css": "^0.0.31",
+    "@types/node": "^15.0.1",
     "@types/prettier": "^2.2.2",
     "postcss": "^8.2.7",
     "rollup-plugin-svelte": "^7.1.0",

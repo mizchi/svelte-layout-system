@@ -1,4 +1,3 @@
-import type { Expression } from "typescript";
 import type {
   AttributeNode,
   Node,
@@ -6,12 +5,6 @@ import type {
   TextNode,
   MustacheTagNode,
 } from "./nodes";
-
-export type InsertChildCommand = {
-  type: "insert-child";
-  id: string;
-  child: Node;
-};
 
 export function inlineComponent(
   componentName: string,

@@ -1,6 +1,6 @@
-import { parseSvelteTemplate } from "../parser";
+import { parse } from "../parser";
 import { transform } from "../transformer";
-import { renderSvelteTemplate } from "../printer";
+import { print } from "../printer";
 import * as b from "../builder";
 
 const expected1 = `<script></script>
@@ -36,15 +36,51 @@ it("transform nested flex item length", () => {
   </Flex>
   `;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   const rewrote = transform(parsed, {
     type: "flex-children",
     children: ["3", "2"],
     id: "root",
   });
 
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(expected1);
+});
+
+it("transform multi target", () => {
+  const code = `
+<Flex id="a">
+  <FlexItem length="1" />
+  <FlexItem length="1" />
+</Flex>
+
+<Flex id="b">
+  <FlexItem length="1" />
+  <FlexItem length="1" />
+</Flex>
+`;
+  const parsed = parse(code);
+  const rewrote = transform(parsed, {
+    type: "flex-children",
+    children: ["3", "2"],
+    id: "b",
+  });
+
+  const transformed = print(rewrote);
+  expect(transformed).toBe(`<script></script>
+
+<Flex id="a">
+  <FlexItem length="1" />
+  <FlexItem length="1" />
+</Flex>
+
+<Flex id="b">
+  <FlexItem length="3" />
+  <FlexItem length="2" />
+</Flex>
+
+<style></style>
+`);
 });
 
 it("transform flex item length", () => {
@@ -60,13 +96,13 @@ it("transform flex item length", () => {
   </Flex>
   `;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   const rewrote = transform(parsed, {
     type: "flex-children",
     children: ["3", "2"],
     id: "nested",
   });
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(expected2);
 });
 
@@ -78,14 +114,14 @@ it("transform nested flex item length", () => {
   </Flex>
   `;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   const rewrote = transform(parsed, {
     type: "flex-children",
     children: ["3", "2"],
     id: "root",
   });
 
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(expected1);
 });
 
@@ -96,13 +132,13 @@ it("transform insertChild", () => {
   </Flex>
   `;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   const rewrote = transform(parsed, {
     type: "insert-child",
     id: "x",
     newNode: b.inlineComponent("Hoge"),
   });
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(`<script></script>
 
 <Flex id="root">
@@ -120,14 +156,14 @@ it("transform insertChild with attributes", () => {
   </Flex>
   `;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   // const rewrote = transform(code, )
   const rewrote = transform(parsed, {
     type: "insert-child",
     id: "x",
     newNode: b.inlineComponent("Hoge", [b.attribute("foo", [b.text("bar")])]),
   });
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(`<script></script>
 
 <Flex id="root">
@@ -141,7 +177,7 @@ it("transform insertChild with attributes", () => {
 it("transform updateAttribute", () => {
   const code = `<Flex id="root" v="1" />`;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   // const rewrote = transform(code, )
   const rewrote = transform(parsed, {
     type: "update-attribute",
@@ -149,7 +185,7 @@ it("transform updateAttribute", () => {
     attributeName: "v",
     value: [b.text("2")],
   });
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(`<script></script>
 
 <Flex id="root" v="2" />
@@ -161,14 +197,14 @@ it("transform updateAttribute", () => {
 it("transform updateAttribute with create", () => {
   const code = `<Flex id="root" />`;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   const rewrote = transform(parsed, {
     type: "update-attribute",
     id: "root",
     attributeName: "v",
     value: [b.text("99")],
   });
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(`<script></script>
 
 <Flex id="root" v="99" />
@@ -184,13 +220,13 @@ it("transform deleteNode", () => {
 </Flex>
 `;
 
-  const parsed = parseSvelteTemplate(code);
+  const parsed = parse(code);
   // const rewrote = transform(code, )
   const rewrote = transform(parsed, {
     type: "delete-node",
     id: "b",
   });
-  const transformed = renderSvelteTemplate(rewrote);
+  const transformed = print(rewrote);
   expect(transformed).toBe(`<script></script>
 
 <Flex id="root"><FlexItem id="a" xxx="1" /></Flex>

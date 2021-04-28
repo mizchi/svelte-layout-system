@@ -1,10 +1,6 @@
-import type { UpdateAttributeCommand } from "./rewriter/updateAttribute";
-import type { InsertChildCommand } from "./rewriter/insertChild";
-import type { DeleteNodeCommand } from "./rewriter/deleteNode";
-
 import { updateAttirbute } from "./rewriter/updateAttribute";
 import { insertChild } from "./rewriter/insertChild";
-import type { ParsedSvelteAst } from "./types";
+import type { ParsedSvelteAst } from "./node_types";
 import type {
   AttributeNode,
   ElementNode,
@@ -13,13 +9,13 @@ import type {
   Node,
   TextNode,
 } from "./nodes";
-import type { RewriteFlexItemLengthCommand } from "./rewriter/rewriteFlexItemLength";
 import * as b from "./builder";
 
 import produce from "immer";
 import { walk as walkEstree } from "estree-walker";
 import { rewriteFlexItemLength } from "./rewriter/rewriteFlexItemLength";
 import { deleteNode } from "./rewriter/deleteNode";
+import type { RewriteCommand } from "./command_types";
 
 export function hasAttr(
   node: InlineComponentNode | ElementNode,
@@ -65,17 +61,6 @@ export function getAttrText(
   }
   return;
 }
-
-type VoidCommand = {
-  type: "void";
-};
-
-export type RewriteCommand =
-  | VoidCommand
-  | RewriteFlexItemLengthCommand
-  | InsertChildCommand
-  | DeleteNodeCommand
-  | UpdateAttributeCommand;
 
 export function transform(parsed: ParsedSvelteAst, cmd: RewriteCommand) {
   return produce(parsed, (newParsed) => {

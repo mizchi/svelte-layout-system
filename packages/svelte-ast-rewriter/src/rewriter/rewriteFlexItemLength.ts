@@ -1,12 +1,6 @@
 import type { InlineComponentNode, Node } from "../nodes";
-import type { FlexChildren } from "svelte-layout-system";
 import { hasAttr, getAttr } from "../transformer";
-
-export type RewriteFlexItemLengthCommand = {
-  type: "flex-children";
-  id: string;
-  children: FlexChildren;
-};
+import type { RewriteFlexItemLengthCommand } from "../command_types";
 
 export function rewriteFlexItemLength(
   cmd: RewriteFlexItemLengthCommand,

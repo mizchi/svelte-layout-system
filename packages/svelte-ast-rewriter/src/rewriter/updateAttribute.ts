@@ -1,3 +1,4 @@
+import type { UpdateAttributeCommand } from "../command_types";
 import type {
   InlineComponentNode,
   Node,
@@ -7,13 +8,6 @@ import type {
   ElementNode,
 } from "../nodes";
 import { hasAttr, setAttr } from "../transformer";
-
-export type UpdateAttributeCommand = {
-  type: "update-attribute";
-  id: string;
-  attributeName: string;
-  value: Array<TextNode | MustacheTagNode>;
-};
 
 export function updateAttirbute(
   cmd: UpdateAttributeCommand,
