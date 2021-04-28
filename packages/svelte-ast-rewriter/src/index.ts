@@ -7,4 +7,4 @@ export * from "./nodes";
 export * from "./node_types";
 export * from "./command_types";
 export * from "./printer";
-export { parse as parseSvelteTemplate } from "./parser";
+export { parse } from "./parser";
