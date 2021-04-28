@@ -1,4 +1,4 @@
-import * as builder from "./builder";
+import * as builder from "./ast_builder";
 
 export { builder };
 

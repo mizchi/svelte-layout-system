@@ -1,5 +1,5 @@
 import ts from "typescript";
-import type { NodeAttribute } from "./types";
+import type { NodeAttribute } from "./node_types";
 
 type ScriptEditableProperty = {
   identifier: string;

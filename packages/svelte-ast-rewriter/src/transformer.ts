@@ -9,7 +9,7 @@ import type {
   Node,
   TextNode,
 } from "./nodes";
-import * as b from "./builder";
+import * as b from "./ast_builder";
 
 import produce from "immer";
 import { walk as walkEstree } from "estree-walker";

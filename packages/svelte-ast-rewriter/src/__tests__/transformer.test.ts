@@ -1,7 +1,7 @@
 import { parse } from "../parser";
 import { transform } from "../transformer";
 import { print } from "../printer";
-import * as b from "../builder";
+import * as b from "../ast_builder";
 
 const expected1 = `<script></script>
 
