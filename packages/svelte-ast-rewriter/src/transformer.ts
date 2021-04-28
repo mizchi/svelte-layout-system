@@ -86,6 +86,16 @@ export function transform(parsed: ParsedSvelteAst, cmd: RewriteCommand) {
   });
 }
 
+export function transformWithVisit(
+  parsed: ParsedSvelteAst,
+  visitor: (node: Node, parent?: Node, prop?: string, index?: number) => void
+) {
+  return produce(parsed, (newParsed) => {
+    const fragment = newParsed.template.html as Node;
+    visit(fragment, visitor);
+  });
+}
+
 function visit(
   node: Node,
   visitor: (node: Node, parent?: Node, prop?: string, index?: number) => void
