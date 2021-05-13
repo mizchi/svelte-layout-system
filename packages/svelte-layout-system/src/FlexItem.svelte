@@ -1,7 +1,6 @@
 <script lang="ts">
   import { getFlexContext } from "./EditableFlex.svelte";
   import { hasSuffix } from "./lib/layout";
-  import { isEditable } from "./Editable.svelte";
   export let length: `${number}px` | `${number}`;
   const flexContext = getFlexContext();
 
@@ -20,9 +19,6 @@
       } else if (flexContext.direction === "column") {
         newStyle = `width: 100%; flex-grow: ${length}; flex-basis: 0;`;
       }
-    }
-    if (isEditable()) {
-      newStyle += `outline: 1px dashed black`;
     }
     style = newStyle;
   }

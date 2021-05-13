@@ -2,9 +2,8 @@
   import type { FlexChildren, FlexChange } from "svelte-layout-system";
   import {
     Flex as RawFlex,
-    FlexItem,
+    EditableFlexItem as FlexItem,
     EditableFlex,
-    Editable,
   } from "svelte-layout-system";
   import { getEditContext } from "./EditContext.svelte";
   import TextBlock from "./TextBlock.svelte";
@@ -51,71 +50,69 @@
   // $: Flex = RawFlex;
 </script>
 
-<Editable editable={true}>
-  <div class="h-full w-full">
-    <div class="p-4">
-      {#if $editMode === "preview"}
-        <button>[preview]</button>
-      {:else}
-        <button on:click={onClickPreview}>preview</button>
-      {/if}
-      |
-      {#if $editMode === "block"}
-        <button>[block]</button>
-      {:else}
-        <button on:click={onClickBlock}>block</button>
-      {/if}
-      |
-      {#if $editMode === "layout"}
-        <button>[layout]</button>
-      {:else}
-        <button on:click={onClickLayout}>layout</button>
-      {/if}
-    </div>
-    <div class="p-4">
-      <svelte:component
-        this={Flex}
-        width="800px"
-        height="400px"
-        direction="column"
-        id="root"
-        on:change={onChangeFlex1}
-      >
-        <FlexItem length={flexChildren1[0]}>
-          <TextBlock text="header" />
-        </FlexItem>
-        <FlexItem length={flexChildren1[1]}>
-          <svelte:component this={Flex} on:change={onChangeFlex2}>
-            <FlexItem length={flexChildren2[0]}>
-              <ImageBlock src="https://i.imgur.com/nAnqC.jpg" id="xxx" />
-            </FlexItem>
-            <FlexItem length={flexChildren2[1]}>
-              <TextBlock text="center" />
-            </FlexItem>
-            <FlexItem length={flexChildren2[2]}>
-              <TextBlock text="right" />
-            </FlexItem>
-          </svelte:component>
-        </FlexItem>
-        <FlexItem length={flexChildren1[2]}>
-          <ImageBlock src="https://i.imgur.com/nAnqC.jpg" id="xxx" />
-        </FlexItem>
-        <FlexItem length={flexChildren1[3]}>
-          <svelte:component this={Flex} on:change={onChangeFlex3}>
-            {#each flexChildren3 as c, idx}
-              {#if c.endsWith("px")}
-                <FlexItem length={c}>
-                  <TextBlock text={idx.toString()} />
-                </FlexItem>
-              {:else}
-                <FlexItem length={c}>
-                  <TextBlock text={idx.toString()} />
-                </FlexItem>
-              {/if}
-            {/each}
-          </svelte:component>
-        </FlexItem>
-      </svelte:component>
-    </div>
+<div class="h-full w-full">
+  <div class="p-4">
+    {#if $editMode === "preview"}
+      <button>[preview]</button>
+    {:else}
+      <button on:click={onClickPreview}>preview</button>
+    {/if}
+    |
+    {#if $editMode === "block"}
+      <button>[block]</button>
+    {:else}
+      <button on:click={onClickBlock}>block</button>
+    {/if}
+    |
+    {#if $editMode === "layout"}
+      <button>[layout]</button>
+    {:else}
+      <button on:click={onClickLayout}>layout</button>
+    {/if}
   </div>
-</Editable>
+  <div class="p-4">
+    <svelte:component
+      this={Flex}
+      width="400px"
+      height="400px"
+      direction="column"
+      id="root"
+      on:change={onChangeFlex1}
+    >
+      <FlexItem length={flexChildren1[0]}>
+        <TextBlock text="header" />
+      </FlexItem>
+      <FlexItem length={flexChildren1[1]}>
+        <svelte:component this={Flex} on:change={onChangeFlex2}>
+          <FlexItem length={flexChildren2[0]}>
+            <ImageBlock src="https://i.imgur.com/nAnqC.jpg" id="xxx" />
+          </FlexItem>
+          <FlexItem length={flexChildren2[1]}>
+            <TextBlock text="center" />
+          </FlexItem>
+          <FlexItem length={flexChildren2[2]}>
+            <TextBlock text="right" />
+          </FlexItem>
+        </svelte:component>
+      </FlexItem>
+      <FlexItem length={flexChildren1[2]}>
+        <ImageBlock src="https://i.imgur.com/nAnqC.jpg" id="xxx" />
+      </FlexItem>
+      <FlexItem length={flexChildren1[3]}>
+        <svelte:component this={Flex} on:change={onChangeFlex3}>
+          {#each flexChildren3 as c, idx}
+            {#if c.endsWith("px")}
+              <FlexItem length={c}>
+                <TextBlock text={idx.toString()} />
+              </FlexItem>
+            {:else}
+              <FlexItem length={c}>
+                <TextBlock text={idx.toString()} />
+              </FlexItem>
+            {/if}
+          {/each}
+        </svelte:component>
+      </FlexItem>
+    </svelte:component>
+  </div>
+</div>

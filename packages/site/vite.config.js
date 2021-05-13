@@ -3,6 +3,7 @@ import autoPreprocess from "svelte-preprocess";
 import path from "path";
 
 export default {
+  port: 9999,
   build: {
     target: "es2019",
     rollupOptions: {
