@@ -1,6 +1,6 @@
 {
   "name": "svelte-layout-system",
-  "version": "0.1.7",
+  "version": "0.1.12",
   "license": "MIT",
   "scripts": {
     "prepublishOnly": "yarn build",
